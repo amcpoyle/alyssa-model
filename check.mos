@@ -1,0 +1,12 @@
+loadModel(Modelica, {"4.0.0"});
+getErrorString();
+loadFile("C:/Users/amcpo/VehicleModel/AlyssaModel.mo");
+getErrorString();
+checkModel(AlyssaModel.Wheels.MFForces);
+getErrorString();
+checkModel(AlyssaModel.Wheels.SlipDynamics);
+getErrorString();
+checkModel(AlyssaModel.Wheels.Rim);
+getErrorString();
+checkModel(AlyssaModel.Wheels.OptimalControlWheel);
+getErrorString();

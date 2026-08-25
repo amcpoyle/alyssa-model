@@ -1,0 +1,235 @@
+package AlyssaModel
+   
+package Components
+  end Components;
+
+  package Wheels
+    model MFForces
+    import Modelica.Units.SI.Force;
+    
+    Modelica.Blocks.Interfaces.RealInput kappa annotation(
+      Placement(transformation(origin = {-100, 80}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-100, 75}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealInput alpha(unit="rad") annotation(
+      Placement(transformation(origin = {-100, 22}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-100, 25}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealInput fz(unit="N") annotation(
+      Placement(transformation(origin = {-100, -19}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-100, -25}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealInput mu annotation(
+      Placement(transformation(origin = {-100, -81}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-100, -75}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealOutput fx(unit="N") annotation(
+      Placement(transformation(origin = {99, 79}, extent = {{-9, -9}, {9, 9}}), iconTransformation(origin = {100, 75}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Blocks.Interfaces.RealOutput fy(unit="N") annotation(
+      Placement(transformation(origin = {99, 61}, extent = {{-9, -9}, {9, 9}}), iconTransformation(origin = {100, 25}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Blocks.Interfaces.RealOutput mz(unit="Nm") annotation(
+      Placement(transformation(origin = {99, 41}, extent = {{-9, -9}, {9, 9}}), iconTransformation(origin = {100, -25}, extent = {{-10, -10}, {10, 10}})));
+    Force fzEff;
+    Real muXMax;
+    Real muYMax;
+    Real kappaMax;
+    Real alphaMax;
+    Real kappaN;
+    Real alphaN;
+    Real rho;
+    Real sx;
+    Real sy;
+    Real muX;
+    Real muY;
+  parameters params annotation(
+        Placement(transformation(origin = {120, 90}, extent = {{-10, -10}, {10, 10}})));
+    equation
+    fzEff = Functions.smoothMax(fz, 0.0);
+    muXMax = Functions.interpLoad(fzEff, params.muXMax1, params.muXMax2)*mu;
+    muYMax = Functions.interpLoad(fzEff, params.muYMax1, params.muYMax2)*mu;
+    kappaMax = Functions.interpLoad(fzEff, params.kappaMax1, params.kappaMax2);
+    alphaMax = Functions.interpLoad(fzEff, params.alphaMax1, params.alphaMax2);
+    kappaN = kappa/(kappaMax + params.smoothingEpsilon);
+    alphaN = alpha/(alphaMax + params.smoothingEpsilon);
+    rho = sqrt(kappaN^2 + alphaN^2 + params.smoothingEpsilon^2);
+    // always >= 0 so sqrt should be ok
+    sx = tan(Modelica.Constants.pi/(2.0*params.qx));
+    sy = tan(Modelica.Constants.pi/(2.0*params.qy));
+    muX = muXMax*sin(params.qx*atan(sx*rho));
+    muY = muYMax*sin(params.qy*atan(sy*rho));
+    fx = muX*fzEff*(kappaN/rho);
+    fy = muY*fzEff*(alphaN/rho);
+    mz = 0.0*fx;
+    // Mz is zero for now
+    end MFForces;
+
+    model OptimalControlWheel
+    import Modelica.Units.SI.*;
+    
+    Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFlange annotation(
+        Placement(transformation(origin = {94, 0}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {54, -4}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealInput fz(unit="N") annotation(
+        Placement(transformation(origin = {-100, 89}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-28, -69}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput mu annotation(
+        Placement(transformation(origin = {-100, 69}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-28, -69}, extent = {{-20, -20}, {20, 20}})));
+  MFForces slipForces annotation(
+        Placement(transformation(origin = {0, 40}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput vx(unit="m/s") annotation(
+        Placement(transformation(origin = {-100, 49}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-28, -69}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput vy(unit="m/s") annotation(
+        Placement(transformation(origin = {-100, 29}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-28, -69}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealOutput fx(unit="N") annotation(
+        Placement(transformation(origin = {100, 70}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {38, 50}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput fy(unit="N") annotation(
+        Placement(transformation(origin = {100, 48}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {42, 14}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput mz(unit="N.m") annotation(
+        Placement(transformation(origin = {100, 28}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {32, 10}, extent = {{-10, -10}, {10, 10}})));
+  SlipDynamics slipDynamics annotation(
+        Placement(transformation(origin = {-60, 40}, extent = {{-20, -20}, {20, 20}})));
+  Rim rim annotation(
+        Placement(transformation(origin = {60, 42}, extent = {{-20, -20}, {20, 20}})));
+    equation
+  connect(vx, slipDynamics.vx) annotation(
+        Line(points = {{-100, 50}, {-66, 50}, {-66, 46}}, color = {0, 0, 127}));
+  connect(vy, slipDynamics.vRim) annotation(
+        Line(points = {{-100, 30}, {-52, 30}, {-52, 40}}, color = {0, 0, 127}));
+  connect(slipDynamics.kappa, slipForces.kappa) annotation(
+        Line(points = {{-38, 46}, {-20, 46}, {-20, 56}}, color = {0, 0, 127}));
+  connect(slipDynamics.alpha, slipForces.alpha) annotation(
+        Line(points = {{-42, 40}, {-20, 40}, {-20, 46}}, color = {0, 0, 127}));
+  connect(fz, slipForces.fz) annotation(
+        Line(points = {{-100, 90}, {-20, 90}, {-20, 36}}, color = {0, 0, 127}));
+  connect(mu, slipForces.mu) annotation(
+        Line(points = {{-100, 70}, {-20, 70}, {-20, 26}}, color = {0, 0, 127}));
+  connect(slipForces.fx, rim.fx) annotation(
+        Line(points = {{20, 56}, {52, 56}, {52, 52}}, color = {0, 0, 127}));
+  connect(slipForces.mz, rim.fz) annotation(
+        Line(points = {{20, 36}, {42, 36}, {42, 34}}, color = {0, 0, 127}));
+  connect(rim.hubFlange, hubFlange) annotation(
+        Line(points = {{46, 48}, {94, 48}, {94, 0}}, color = {135, 135, 135}));
+  connect(slipForces.fy, fy) annotation(
+        Line(points = {{20, 46}, {100, 46}, {100, 48}}, color = {0, 0, 127}));
+  connect(slipForces.fx, fx) annotation(
+        Line(points = {{20, 56}, {100, 56}, {100, 70}}, color = {0, 0, 127}));
+  connect(slipForces.mz, mz) annotation(
+        Line(points = {{20, 36}, {100, 36}, {100, 28}}, color = {0, 0, 127}));
+    end OptimalControlWheel;
+
+    model Rim
+      import Modelica.Units.SI;
+      
+      parameter SI.Inertia J = 1.2 "Wheel inertia" annotation(Dialog);
+      parameter SI.Radius rEff = 0.33 "Effective rolling radius" annotation(Dialog);
+      parameter SI.RotationalDampingConstant dSpin = 0.5 "bearing damping" annotation(Dialog);
+      parameter Real crr = 0.015 "rolling resistance coeff" annotation(Dialog);
+      parameter SI.AngularVelocity wEps = 1.0 "regularization for rolling res sign" annotation(Dialog);
+      parameter SI.AngularVelocity omegaStart = 0  "Initial spin rate" annotation(Dialog);
+  Modelica.Blocks.Interfaces.RealInput fx(unit = "N") annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-36, 48}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput fz(unit = "N") annotation(
+        Placement(transformation(origin = {-100, -70}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-92, -44}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealOutput omega(unit="rad/s", start=omegaStart, fixed=false, nominal=100, stateSelect = StateSelect.always) annotation(
+        Placement(transformation(origin = {100, 70}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {88, 42}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput vRim(unit="m/s") annotation(
+        Placement(transformation(origin = {100, -72}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {90, -44}, extent = {{-10, -10}, {10, 10}})));
+    
+    
+      SI.Torque tauRoll;
+  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFlange annotation(
+        Placement(transformation(origin = {98, 0}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-74, 28}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      der(hubFlange.phi) = omega;
+      tauRoll = crr*Functions.smoothMax(fz, 0.0)*rEff*omega/sqrt(omega^2 + wEps^2);
+      J*der(omega) = hubFlange.tau - fx*rEff - dSpin*omega - tauRoll;
+      vRim = omega*rEff;
+
+    end Rim;
+
+    model SlipDynamics
+      import Modelica.Units.SI;
+      
+      parameter SI.Length sigmaX = 0.3 "lon. relaxation length" annotation(Dialog);
+      parameter SI.Length sigmaY = 0.5 "lat. relaxation length" annotation(Dialog);
+      parameter SI.Velocity vMin = 1.0 "speed floor" annotation(Dialog);
+      parameter Boolean initRollingFree = true "start with zero slip, match rim speed" annotation(Dialog);
+  Modelica.Blocks.Interfaces.RealInput vx(unit="m/s") "contact patch vx" annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-30, 30}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput vy(unit="m/s") "contact patch vy" annotation(
+        Placement(transformation(origin = {-101, 30}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {39, -4}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput vRim(unit = "m/s") "rim speed" annotation(
+        Placement(transformation(origin = {-101, -12}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {39, -4}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealOutput kappa(start=0, fixed=false, nominal=0.1, stateSelect = StateSelect.always) annotation(
+        Placement(transformation(origin = {100, 70}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {110, 30}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput alpha(unit="rad") annotation(
+        Placement(transformation(origin = {100, 30}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {88, 2}, extent = {{-10, -10}, {10, 10}})));
+    
+      Real tanAlpha(start=0, fixed=false, nominal=0.15, stateSelect=StateSelect.always);
+      SI.Velocity vxAbs;
+      
+    initial equation
+      tanAlpha = 0;
+      if initRollingFree then
+        kappa = 0;
+        der(kappa) = 0;
+      end if;
+      
+    equation
+      vxAbs = sqrt(vx^2 + vMin^2);
+      sigmaX*der(kappa) + vxAbs*kappa = vRim - vx;
+      sigmaY*der(tanAlpha) + vxAbs*tanAlpha = -vy;
+      alpha = atan(tanAlpha);
+
+    end SlipDynamics;
+  end Wheels;
+
+  package Functions 
+   function smoothMax
+      input Real a;
+      input Real b;
+      input Real eps = 1e-6 "Regularization, controls sharpness near a=b";
+      output Real y;
+    algorithm
+      y := 0.5*(a + b + sqrt((a - b)^2 + eps));
+      annotation(
+        smoothOrder = 1,
+        Inline = true);
+    end smoothMax;
+
+    function interpLoad
+      input Real fz;
+      input Real v1;
+      input Real v2;
+      output Real interpolatedLoad;
+  parameters params annotation(
+        Placement(transformation(origin = {90, 90}, extent = {{-10, -10}, {10, 10}})));
+    algorithm
+      interpolatedLoad := v1 + (v2 - v1)*(fz - params.fzRef1)/(params.fzRef2 - params.fzRef1);
+      annotation(smoothOrder=2, Inline=true);
+
+    end interpLoad;
+
+    function smoothSqrt
+      input Real x;
+      input Real eps = 1e-8;
+      output Real y;
+    algorithm
+      y := sqrt(x + eps);
+      annotation(smoothOrder=1, Inline=true);
+    end smoothSqrt;
+  end Functions;
+
+  record parameters
+    import Modelica.Units.SI.*;
+    import Modelica.Units.Conversions.from_deg;
+    parameter Force fzRef1 = 2000;
+    parameter Force fzRef2 = 6000;
+    
+    parameter Real muXMax1 = 1.75;
+    parameter Real muXMax2 = 1.40;
+    parameter Real muYMax1 = 1.80;
+    parameter Real muYMax2 = 1.45;
+    
+    parameter Real kappaMax1 = 0.11;
+    parameter Real kappaMax2 = 0.10;
+    parameter Angle alphaMax1 = from_deg(9.0);
+    parameter Angle alphaMax2 = from_deg(8.0);
+    
+    parameter Real qx = 1.9;
+    parameter Real qy = 1.9;
+    parameter Real smoothingEpsilon = 1e-6;
+  end parameters;
+  annotation(
+    uses(Modelica(version = "4.0.0")));
+end AlyssaModel;
