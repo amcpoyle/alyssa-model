@@ -532,7 +532,7 @@ package AlyssaModel
     parameter SI.Length b = 1.7 "cg to rear axle";
     parameter Real ackermann = 0.0 "0 = parallel, 1 = full ackerman, <0 = anti";
     // environment parameters
-    parameter Real rho = 1.225;     // unused right now, see VehicleAero
+    parameter Real rho = 1.225;         // unused right now, see VehicleAero
     // engine parameters
     parameter Real hp = 1000 "horsepower";
     parameter SI.Power hpPower = hp*745.7 "horsepower in W";
@@ -543,6 +543,10 @@ package AlyssaModel
   
     parameter SI.AngularVelocity maxSteerRate = 5.0 "rad/s";
     parameter SI.Angle deltaMax = 0.35;
+    
+    parameter SI.Height rEff0 = 0.33;
+    parameter SI.Height cgHeight = 0.30;
+    
   end parameters;
 
   package Vehicles
@@ -655,6 +659,8 @@ package AlyssaModel
         Placement(transformation(origin = {-100, 50}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 95}, extent = {{-20, -20}, {20, 20}})));
   Modelica.Blocks.Interfaces.RealOutput tau[4](each unit="N.m") "torque demand" annotation(
         Placement(transformation(origin = {100, 8}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput delta(unit="rad") annotation(
+        Placement(transformation(origin = {100, -12}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {82, -22}, extent = {{-10, -10}, {10, 10}})));
     equation
   connect(steer, steerSmoothing.uSteer) annotation(
         Line(points = {{-100, 70}, {-36, 70}, {-36, 34}}, color = {0, 0, 127}));
@@ -662,6 +668,10 @@ package AlyssaModel
         Line(points = {{-100, 88}, {-22, 88}, {-22, 76}}, color = {0, 0, 127}));
   connect(w, throttleSmoothing.w) annotation(
         Line(points = {{-100, 50}, {-22, 50}, {-22, 72}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(steerSmoothing.delta, delta) annotation(
+        Line(points = {{-22, 30}, {39, 30}, {39, -12}, {100, -12}}, color = {0, 0, 127}));
+  connect(throttleSmoothing.tau, tau) annotation(
+        Line(points = {{-24, 68}, {100, 68}, {100, 8}}, color = {0, 0, 127}, thickness = 0.5));
     annotation(Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100,-100},{100,100}}),
               graphics = {
                 Rectangle(extent = {{-100,-100},{100,100}},
@@ -734,11 +744,38 @@ package AlyssaModel
   end Controllers;
 
   package MotionBlocks
-  model FreeMotionPlanar
+  model FreeMotionPlanar "6-DOF, SAE coordinates"
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_a worldFrame annotation(
+        Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-30, 18}, extent = {{-16, -16}, {16, 16}})));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_b vehicleFrame annotation(
+        Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-74, 6}, extent = {{-16, -16}, {16, 16}})));
+  Modelica.Mechanics.MultiBody.Joints.Prismatic longitudinal(n = {1, 0, 0}, s(start = 0, fixed = true), v(start = 0, fixed = true))  annotation(
+        Placement(transformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Prismatic lateral(n = {0, 1, 0}, s(start = 0, fixed = true), v(start = 0, fixed = true))  annotation(
+        Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Prismatic heave(n = {0, 0, 1}, s(start = vehicleParams.cgHeight, fixed = true), v(start = 0, fixed = true))  annotation(
+        Placement(transformation(origin = {-22, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Revolute yaw annotation(
+        Placement(transformation(origin = {6, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Revolute pitch annotation(
+        Placement(transformation(origin = {34, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Revolute roll annotation(
+        Placement(transformation(origin = {62, 0}, extent = {{-10, -10}, {10, 10}})));
+  parameters vehicleParams annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
     equation
 
     end FreeMotionPlanar;
   end MotionBlocks;
+
+  package Rigs
+  model Rig
+  Modelica.Blocks.Interfaces.RealInput tau[4](each unit="N.m") annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-34, 56}, extent = {{-20, -20}, {20, 20}})));
+    equation
+
+    end Rig;
+  end Rigs;
   annotation(
     uses(Modelica(version = "4.0.0")));
 end AlyssaModel;
