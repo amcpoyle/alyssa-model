@@ -272,6 +272,8 @@ package AlyssaModel
         Placement(transformation(origin = {-72, -44}, extent = {{-20, -20}, {20, 20}})));
   Modelica.Blocks.Interfaces.RealOutput fz annotation(
         Placement(transformation(origin = {100, -28}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {90, -30}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput omega(unit="rad/s") annotation(
+        Placement(transformation(origin = {100, -72}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {86, -78}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(slipDynamics.kappa, slipForces.kappa) annotation(
         Line(points = {{-38, 46}, {-20, 46}, {-20, 56}}, color = {0, 0, 127}));
@@ -309,7 +311,8 @@ package AlyssaModel
         Line(points = {{-20, 36}, {-52, 36}, {-52, -54}}, color = {0, 0, 127}));
   connect(contactPatch.vx, slipDynamics.vx) annotation(
         Line(points = {{-52, -28}, {-80, -28}, {-80, 56}}, color = {0, 0, 127}));
-    
+  connect(rim.omega, omega) annotation(
+        Line(points = {{78, 50}, {100, 50}, {100, -72}}, color = {0, 0, 127}));
     annotation(Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100,-100},{100,100}}),
             graphics = {
               Rectangle(extent = {{-100,-100},{100,100}},
@@ -453,11 +456,9 @@ package AlyssaModel
       
       frame_a.f = -{fx, fy, -fz} "sae coordinates forces, -fz = road pushing tire up";
       frame_a.t = -cross({0, 0, rEff}, {fx, fy, -fz});
-      
-      // frame_a.r_0 = world coords initially
+// frame_a.r_0 = world coords initially
       vHub = Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, der(frame_a.r_0)); // rotate vector from world frame (frame 1) to hub frame
-      
-      // angular velocity of the hub frame in hub coords
+// angular velocity of the hub frame in hub coords
       wLoc = Modelica.Mechanics.MultiBody.Frames.angularVelocity2(frame_a.R);
       
       vC = vHub + cross(wLoc, {0, 0, rEff}) "contact below hub = +z in SAE";
@@ -522,7 +523,6 @@ package AlyssaModel
     parameter Real qx = 1.9;
     parameter Real qy = 1.9;
     parameter Real smoothingEpsilon = 1e-6;
-    
     // vehicle parameters
     // TODO: add vehicle mass, inertias (currently live in VehicleBody)
     parameter SI.Length wheelbase = 3.6;
@@ -531,10 +531,18 @@ package AlyssaModel
     parameter SI.Length a = 1.9 "cg to front axle";
     parameter SI.Length b = 1.7 "cg to rear axle";
     parameter Real ackermann = 0.0 "0 = parallel, 1 = full ackerman, <0 = anti";
-    
     // environment parameters
-    parameter Real rho = 1.225; // unused right now, see VehicleAero
-    
+    parameter Real rho = 1.225;     // unused right now, see VehicleAero
+    // engine parameters
+    parameter Real hp = 1000 "horsepower";
+    parameter SI.Power hpPower = hp*745.7 "horsepower in W";
+    parameter Real engineEff = 0.90 "engine efficiency, constant for now (unrealistic)";
+    parameter SI.Torque maxDriveTorque = 6000 "total drive torque, split between rear wheels";
+    parameter SI.Torque maxBrakeTorque = 10000 "total brake torque, all 4 wheels";
+    parameter Real brakeBias = 0.62 "fraction of brake torque to front axle";
+  
+    parameter SI.AngularVelocity maxSteerRate = 5.0 "rad/s";
+    parameter SI.Angle deltaMax = 0.35;
   end parameters;
 
   package Vehicles
@@ -553,6 +561,20 @@ package AlyssaModel
         Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
   Components.RearSuspension rearSuspension annotation(
         Placement(transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFR annotation(
+        Placement(transformation(origin = {-70, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-75, 100}, extent = {{-10, -10}, {10, 10}}, rotation=-90)));
+  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFL annotation(
+        Placement(transformation(origin = {-72, -98}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-75, -100}, extent = {{-10, -10}, {10, 10}}, rotation=-90)));
+  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRR annotation(
+        Placement(transformation(origin = {70, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {75, 100}, extent = {{-10, -10}, {10, 10}}, rotation=-90)));
+  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRL annotation(
+        Placement(transformation(origin = {70, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {75, -100}, extent = {{-10, -10}, {10, 10}}, rotation=-90)));
+  Modelica.Blocks.Interfaces.RealInput delta(unit="rad") annotation(
+        Placement(transformation(origin = {-150, 72}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-118, 72}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput mu "grip" annotation(
+        Placement(transformation(origin = {-150, 50}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-118, 72}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealOutput w[4](each unit="rad/s") "wheel speeds output, FL FR RL RR" annotation(
+        Placement(transformation(origin = {150, -72}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {136, -20}, extent = {{-10, -10}, {10, 10}})));
   equation
   connect(frontSuspension.subFrameFront, vehicleBody.subFrameFront) annotation(
         Line(points = {{-40, 0}, {-10, 0}}, color = {95, 95, 95}));
@@ -566,12 +588,157 @@ package AlyssaModel
         Line(points = {{50, 10}, {60, 10}, {60, 50}}, color = {95, 95, 95}));
   connect(rearSuspension.frame_bL, wheelRL.frame_a) annotation(
         Line(points = {{50, -10}, {60, -10}, {60, -50}}, color = {95, 95, 95}));
-  annotation(
-          Diagram(coordinateSystem(preserveAspectRatio = false,
-                                   extent = {{-150, -100}, {150, 100}},
-                                   grid = {2, 2})));
+  connect(hubFR, wheelFR.hubFlange) annotation(
+        Line(points = {{-70, 100}, {-82, 100}, {-82, 50}}));
+  connect(wheelRR.hubFlange, hubRR) annotation(
+        Line(points = {{80, 50}, {86, 50}, {86, 75}, {70, 75}, {70, 100}}, color = {135, 135, 135}));
+  connect(hubFL, wheelFL.hubFlange) annotation(
+        Line(points = {{-72, -98}, {-80, -98}, {-80, -50}}));
+  connect(hubRL, wheelRL.hubFlange) annotation(
+        Line(points = {{70, -100}, {80, -100}, {80, -50}}));
+  connect(delta, frontSuspension.delta) annotation(
+        Line(points = {{-150, 72}, {-100, 72}, {-100, 39}, {-58, 39}, {-58, 6}}, color = {0, 0, 127}));
+  connect(wheelFL.omega, w[1]) annotation(
+        Line(points = {{-78, -42}, {150, -42}, {150, -72}}, color = {0, 0, 127}));
+  connect(wheelFR.omega, w[2]) annotation(
+        Line(points = {{-80, 58}, {150, 58}, {150, -72}}, color = {0, 0, 127}));
+  connect(wheelRL.omega, w[3]) annotation(
+        Line(points = {{78, -58}, {150, -58}, {150, -72}}, color = {0, 0, 127}));
+  connect(wheelRR.omega, w[4]) annotation(
+        Line(points = {{78, 42}, {150, 42}, {150, -72}}, color = {0, 0, 127}));
+  connect(mu, wheelFR.mu) annotation(
+        Line(points = {{-150, 50}, {-62, 50}, {-62, 42}}, color = {0, 0, 127}));
+  connect(mu, wheelRR.mu) annotation(
+        Line(points = {{-150, 50}, {62, 50}, {62, 58}}, color = {0, 0, 127}));
+  connect(mu, wheelFL.mu) annotation(
+        Line(points = {{-150, 50}, {-62, 50}, {-62, -56}}, color = {0, 0, 127}));
+  connect(mu, wheelRL.mu) annotation(
+        Line(points = {{-150, 50}, {62, 50}, {62, -42}}, color = {0, 0, 127}));
+  annotation(Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-150,-100},{150,100}}),
+            graphics = {
+              Rectangle(extent = {{-150,-100},{150,100}},
+                        lineColor = {0,0,0},
+                        fillColor = {255,255,255},
+                        fillPattern = FillPattern.Solid),
+              Bitmap(extent = {{-90,-90},{90,90}},
+                     fileName = "modelica://AlyssaModel/Resources/Images/Lightning_McQueen.png"),
+              Text(extent = {{-100,-135},{100,-105}}, textString = "%name")}));
+  
   end AlyssaVehicle;
   end Vehicles;
+
+  package Experiments
+  model OptimalControl
+  Vehicles.AlyssaVehicle vehicle annotation(
+        Placement(transformation(origin = {-49.5, -1}, extent = {{-31.5, -21}, {31.5, 21}})));
+  Modelica.Blocks.Sources.Constant mu(k = 1.0)  annotation(
+        Placement(transformation(origin = {-140, 14}, extent = {{-10, -10}, {10, 10}})));
+  Controllers.RigController rigController annotation(
+        Placement(transformation(origin = {39, 59}, extent = {{-17, -17}, {17, 17}})));
+    equation
+  connect(mu.y, vehicle.mu) annotation(
+        Line(points = {{-129, 14}, {-74, 14}}, color = {0, 0, 127}));
+    end OptimalControl;
+  end Experiments;
+
+  package Controllers
+    model RigController
+      Modelica.Blocks.Interfaces.RealInput steer annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 25}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput throttle annotation(
+        Placement(transformation(origin = {-100, 88}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}})));
+  ThrottleSmoothing throttleSmoothing annotation(
+        Placement(transformation(origin = {-30, 70}, extent = {{-10, -10}, {10, 10}})));
+  SteerSmoothing steerSmoothing annotation(
+        Placement(transformation(origin = {-30, 30}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealInput w[4] (each unit="rad/s") "wheel speeds" annotation(
+        Placement(transformation(origin = {-100, 50}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 95}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealOutput tau[4](each unit="N.m") "torque demand" annotation(
+        Placement(transformation(origin = {100, 8}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}})));
+    equation
+  connect(steer, steerSmoothing.uSteer) annotation(
+        Line(points = {{-100, 70}, {-36, 70}, {-36, 34}}, color = {0, 0, 127}));
+  connect(throttle, throttleSmoothing.u) annotation(
+        Line(points = {{-100, 88}, {-22, 88}, {-22, 76}}, color = {0, 0, 127}));
+  connect(w, throttleSmoothing.w) annotation(
+        Line(points = {{-100, 50}, {-22, 50}, {-22, 72}}, color = {0, 0, 127}, thickness = 0.5));
+    annotation(Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100,-100},{100,100}}),
+              graphics = {
+                Rectangle(extent = {{-100,-100},{100,100}},
+                          lineColor = {0,0,0},
+                          fillColor = {255,255,255},
+                          fillPattern = FillPattern.Solid),
+                Bitmap(extent = {{-90,-90},{90,90}},
+                       fileName = "modelica://AlyssaModel/Resources/Images/pcb icon.png"),
+                Text(extent = {{-100,-135},{100,-105}}, textString = "%name")}));
+
+    end RigController;
+
+    model ThrottleSmoothing
+      import Modelica.Units.SI;
+      
+      parameter Real uEps = 1e-3;
+      parameter SI.AngularVelocity wEps = 1.0;
+      parameter SI.Torque tEps = 1.0;
+      
+  parameters vehicleParams annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealInput u "-1 = full brake, 1 = full throttle" annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {70, 60}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealInput w[4](each unit="rad/s") "wheel speeds" annotation(
+        Placement(transformation(origin = {-100, 30}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {72, 16}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Blocks.Interfaces.RealOutput tau[4](each unit="N.m") "torque demand"  
+    annotation(
+        Placement(transformation(origin = {100, 8}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {54, -16}, extent = {{-20, -20}, {20, 20}})));
+    
+      Real uDrive;
+      Real uBrake;
+      SI.AngularVelocity wDrive;
+      SI.Torque tauPower;
+      SI.Torque tauDrive;
+    equation
+// split the command into throttle and brake
+// basically a smooth splitter but not in a function
+// uEps adjusts the width of the smooth splitter
+      uDrive = 0.5*(u + sqrt(u^2 + uEps^2));
+      uBrake = 0.5*(-u + sqrt(u^2 + uEps^2));
+      
+      wDrive   = sqrt(((w[3] + w[4])/2)^2 + wEps^2); // rear wheels only
+      tauPower = vehicleParams.hpPower*vehicleParams.engineEff/wDrive;
+      tauDrive = 0.5*(vehicleParams.maxDriveTorque + tauPower - sqrt((vehicleParams.maxDriveTorque - tauPower)^2 + tEps^2));
+      
+       tau[1] = -uBrake*vehicleParams.maxBrakeTorque*vehicleParams.brakeBias*0.5*w[1]/sqrt(w[1]^2 + wEps^2);
+       tau[2] = -uBrake*vehicleParams.maxBrakeTorque*vehicleParams.brakeBias*0.5*w[2]/sqrt(w[2]^2 + wEps^2);
+       tau[3] =  uDrive*tauDrive*0.5 - uBrake*vehicleParams.maxBrakeTorque*(1-vehicleParams.brakeBias)*0.5*w[3]/sqrt(w[3]^2 +
+    wEps^2);
+       tau[4] =  uDrive*tauDrive*0.5 - uBrake*vehicleParams.maxBrakeTorque*(1-vehicleParams.brakeBias)*0.5*w[4]/sqrt(w[4]^2 +
+    wEps^2);
+      
+
+    end ThrottleSmoothing;
+
+    model SteerSmoothing
+      import Modelica.Units.SI;
+      
+      parameters vehicleParams annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Blocks.Interfaces.RealInput uSteer "-1 = full left, 1 = full right" annotation(
+        Placement(transformation(origin = {-100, 50}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-56, 34}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealOutput delta(unit = "rad", start=0, fixed=true, stateSelect = StateSelect.always) annotation(
+        Placement(transformation(origin = {100, 50}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {76, 8}, extent = {{-10, -10}, {10, 10}})));
+    
+    equation
+      der(delta) = vehicleParams.maxSteerRate*uSteer;
+
+    end SteerSmoothing;
+  end Controllers;
+
+  package MotionBlocks
+  model FreeMotionPlanar
+    equation
+
+    end FreeMotionPlanar;
+  end MotionBlocks;
   annotation(
     uses(Modelica(version = "4.0.0")));
 end AlyssaModel;
