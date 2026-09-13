@@ -88,7 +88,6 @@ package AlyssaModel
     end VehicleAero;
 
     model FrontSuspension
-      parameter Modelica.Mechanics.MultiBody.Types.Axis nSteer = {0, 0, 1} "steer axis";
       parameter Modelica.Units.SI.Position dzHub = 0 "hub height relative to subframe, +z = down";
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a subFrameFront annotation(
         Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}})));
@@ -100,46 +99,30 @@ package AlyssaModel
         Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-72, 58}, extent = {{-20, -20}, {20, 20}})));
       parameters vehicleParams annotation(
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
-      Steering steering annotation(
-        Placement(transformation(origin = {-30, 30}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.MultiBody.Parts.FixedTranslation armL(r = {0, -vehicleParams.tf/2, dzHub}) annotation(
         Placement(transformation(origin = {74, -24}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
       Modelica.Mechanics.MultiBody.Parts.FixedTranslation armR(r = {0, vehicleParams.tf/2, dzHub}) annotation(
         Placement(transformation(origin = {74, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-      Modelica.Mechanics.MultiBody.Joints.Revolute steerL(useAxisFlange = true, n = nSteer) annotation(
-        Placement(transformation(origin = {40, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-      Modelica.Mechanics.MultiBody.Joints.Revolute steerR(useAxisFlange = true, n = nSteer) annotation(
-        Placement(transformation(origin = {40, 60}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-      Modelica.Mechanics.Rotational.Sources.Position posL(exact = true) annotation(
-        Placement(transformation(origin = {10, 36}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.Rotational.Sources.Position posR(exact = true) annotation(
-        Placement(transformation(origin = {10, 10}, extent = {{-10, -10}, {10, 10}})));
+  Steering steering annotation(
+        Placement(transformation(origin = {-50, 30}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(subFrameFront, armL.frame_a) annotation(
         Line(points = {{100, 0}, {74, 0}, {74, -14}}));
       connect(subFrameFront, armR.frame_a) annotation(
         Line(points = {{100, 0}, {74, 0}, {74, 24}}));
-      connect(steerR.frame_a, armR.frame_b) annotation(
-        Line(points = {{50, 60}, {74, 60}, {74, 44}}, color = {95, 95, 95}));
-      connect(armL.frame_b, steerL.frame_a) annotation(
-        Line(points = {{74, -34}, {50, -34}, {50, -40}}, color = {95, 95, 95}));
-      connect(steerL.frame_b, frame_bL) annotation(
-        Line(points = {{30, -40}, {0, -40}, {0, -100}}, color = {95, 95, 95}));
-      connect(steerR.frame_b, frame_bR) annotation(
-        Line(points = {{30, 60}, {0, 60}, {0, 100}}, color = {95, 95, 95}));
-      connect(delta, steering.delta) annotation(
-        Line(points = {{-100, 70}, {-35, 70}, {-35, 35}}, color = {0, 0, 127}));
-      connect(steering.deltaL, posL.phi_ref) annotation(
-        Line(points = {{-18, 34}, {-2, 34}, {-2, 36}}, color = {0, 0, 127}));
-      connect(steering.deltaR, posR.phi_ref) annotation(
-        Line(points = {{-20, 28}, {-2, 28}, {-2, 10}}, color = {0, 0, 127}));
-      connect(posL.flange, steerL.axis) annotation(
-        Line(points = {{20, 36}, {40, 36}, {40, -50}}));
-      connect(posR.flange, steerR.axis) annotation(
-        Line(points = {{20, 10}, {40, 10}, {40, 50}}));
+      connect(steering.frame_bR, frame_bR) annotation(
+        Line(points = {{-46, 38}, {-46, 74}, {0, 74}, {0, 100}}, color = {95, 95, 95}));
+      connect(steering.frame_bL, frame_bL) annotation(
+        Line(points = {{-45, 23}, {-24, 23}, {-24, -32.5}, {0, -32.5}, {0, -100}}, color = {95, 95, 95}));
+      connect(steering.frame_aR, armR.frame_b) annotation(
+        Line(points = {{-41, 36}, {21.5, 36}, {21.5, 44}, {74, 44}}, color = {95, 95, 95}));
+      connect(steering.frame_aL, armL.frame_b) annotation(
+        Line(points = {{-40, 24}, {17, 24}, {17, -34}, {74, -34}}, color = {95, 95, 95}));
+  connect(delta, steering.delta) annotation(
+        Line(points = {{-100, 70}, {-54, 70}, {-54, 30}}, color = {0, 0, 127}));
     end FrontSuspension;
 
-    model Steering
+    model SteeringComputation
       import Modelica.Units.SI;
       Modelica.Blocks.Interfaces.RealInput delta annotation(
         Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-48, 50}, extent = {{-20, -20}, {20, 20}})));
@@ -154,7 +137,7 @@ package AlyssaModel
       corr = vehicleParams.ackermann*0.5*(vehicleParams.tf/vehicleParams.wheelbase)*delta^2;
       deltaL = delta - corr;
       deltaR = delta + corr;
-    end Steering;
+    end SteeringComputation;
 
     model RearSuspension
       parameter Modelica.Units.SI.Position dzHub = 0 "hub height relative to subframe";
@@ -180,6 +163,50 @@ package AlyssaModel
       connect(armR.frame_b, frame_bR) annotation(
         Line(points = {{0, 60}, {0, 100}}, color = {95, 95, 95}));
     end RearSuspension;
+
+    model Steering
+    
+      parameter Modelica.Mechanics.MultiBody.Types.Axis nSteer = {0, 0, 1} "steer axis";
+  AlyssaModel.Components.SteeringComputation steeringComputation annotation(
+        Placement(transformation(origin = {-49, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Rotational.Sources.Position posL(exact = true) annotation(
+        Placement(transformation(origin = {-10, -30}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Rotational.Sources.Position posR(exact = true) annotation(
+        Placement(transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Revolute steerL(n = nSteer, useAxisFlange = true) annotation(
+        Placement(transformation(origin = {39, -61}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Modelica.Mechanics.MultiBody.Joints.Revolute steerR(n = nSteer, useAxisFlange = true) annotation(
+        Placement(transformation(origin = {39, 59}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Modelica.Blocks.Interfaces.RealInput delta(unit = "rad") annotation(
+        Placement(transformation(origin = {-101, 61}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-41, -3}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bR annotation(
+        Placement(transformation(origin = {0, 99}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {42, 83}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bL annotation(
+        Placement(transformation(origin = {1, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {51, -74}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_aR annotation(
+        Placement(transformation(origin = {100, 60}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {94, 58}, extent = {{-16, -16}, {16, 16}})));
+  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_aL annotation(
+        Placement(transformation(origin = {100, -60}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {98, -60}, extent = {{-16, -16}, {16, 16}})));
+    equation
+  connect(delta, steeringComputation.delta) annotation(
+        Line(points = {{-100, 62}, {-54, 62}, {-54, 6}}, color = {0, 0, 127}));
+  connect(steeringComputation.deltaL, posL.phi_ref) annotation(
+        Line(points = {{-38, 4}, {-22, 4}, {-22, -30}}, color = {0, 0, 127}));
+  connect(steeringComputation.deltaR, posR.phi_ref) annotation(
+        Line(points = {{-40, -2}, {-22, -2}, {-22, 30}}, color = {0, 0, 127}));
+  connect(posR.flange, steerR.axis) annotation(
+        Line(points = {{0, 30}, {40, 30}, {40, 50}}));
+  connect(posL.flange, steerL.axis) annotation(
+        Line(points = {{0, -30}, {39, -30}, {39, -71}}));
+  connect(frame_bR, steerR.frame_b) annotation(
+        Line(points = {{0, 100}, {30, 100}, {30, 60}}));
+  connect(frame_bL, steerL.frame_b) annotation(
+        Line(points = {{2, -100}, {30, -100}, {30, -60}}));
+  connect(steerR.frame_a, frame_aR) annotation(
+        Line(points = {{50, 60}, {100, 60}}, color = {95, 95, 95}));
+  connect(steerL.frame_a, frame_aL) annotation(
+        Line(points = {{50, -60}, {100, -60}}, color = {95, 95, 95}));
+    end Steering;
   end Components;
 
   package Wheels
@@ -658,9 +685,9 @@ package AlyssaModel
     model FlatRoadSim
   OptimalControl optimalControl annotation(
         Placement(transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant throttleInput(k = 0.5)  annotation(
+  Modelica.Blocks.Sources.Constant throttleInput(k = 0.2)  annotation(
         Placement(transformation(origin = {-84, 20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant steerInput(k = 0)  annotation(
+  Modelica.Blocks.Sources.Constant steerInput(k = 0.1)  annotation(
         Placement(transformation(origin = {-84, -12}, extent = {{-10, -10}, {10, 10}})));
     equation
   connect(throttleInput.y, optimalControl.throttle) annotation(
