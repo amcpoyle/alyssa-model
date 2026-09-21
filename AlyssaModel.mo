@@ -2,14 +2,10 @@ package AlyssaModel
   package Components
     model VehicleBody
       import Modelica.Units.SI;
-      parameter SI.Mass vehicleMass = 700 annotation(
-        Dialog);
-      parameter SI.Inertia Ixx = 250 annotation(
-        Dialog);
-      parameter SI.Inertia Iyy = 350 annotation(
-        Dialog);
-      parameter SI.Inertia Izz = 550 annotation(
-        Dialog);
+      parameter SI.Mass vehicleMass = vehicleParams.vehicleMass;
+      parameter SI.Inertia Ixx = vehicleParams.Ixx;
+      parameter SI.Inertia Iyy = vehicleParams.Iyy;
+      parameter SI.Inertia Izz = vehicleParams.Izz;
       Modelica.Mechanics.MultiBody.Parts.Body body(I_11 = Ixx, I_22 = Iyy, I_33 = Izz, r_CM = {0, 0, 0}, m = vehicleMass) annotation(
         Placement(transformation(origin = {0, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisFrame annotation(
@@ -207,6 +203,59 @@ package AlyssaModel
   connect(steerL.frame_a, frame_aL) annotation(
         Line(points = {{50, -60}, {100, -60}}, color = {95, 95, 95}));
     end Steering;
+
+    package Suspension
+    model BaseCorner
+        parameter Integer side "+1 = right, -1 = left; mirrors toe, camber, hardpoints";
+        Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisConnect annotation(
+          Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-120, -74}, extent = {{-16, -16}, {16, 16}})));
+        Modelica.Mechanics.MultiBody.Interfaces.Frame_b wheelConnect annotation(
+          Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {74, 4}, extent = {{-16, -16}, {16, 16}})));
+        Modelica.Mechanics.Rotational.Interfaces.Flange_a rackConnect annotation(
+          Placement(transformation(origin = {-100, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-82, -40}, extent = {{-10, -10}, {10, 10}})));
+      equation
+
+      end BaseCorner;
+
+      model Suspension
+        import Modelica.Units.SI;
+        
+        parameter Modelica.Units.SI.Position dzHub = 0 annotation(Dialog);
+        
+    parameters vehicleParams annotation(
+          Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+      equation
+
+      end Suspension;
+
+      model LinearCorner
+        extends AlyssaModel.Components.Suspension.BaseCorner;
+        import Modelica.Units.SI;
+        
+        parameter SI.Force F0 "static spring preload";
+        
+  Modelica.Mechanics.MultiBody.Joints.Prismatic travel(useAxisFlange = true, n = {0, 0, 1}, s(start = 0, fixed = true), v(start = 0, fixed = true))  annotation(
+          Placement(transformation(origin = {-66, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Translational.Components.SpringDamper springDamper annotation(
+          Placement(transformation(origin = {-62, 36}, extent = {{-10, -10}, {10, 10}})));
+      equation
+  connect(springDamper.flange_a, travel.support) annotation(
+          Line(points = {{-72, 36}, {-72, 29}, {-70, 29}, {-70, 6}}, color = {0, 127, 0}));
+  connect(springDamper.flange_b, travel.axis) annotation(
+          Line(points = {{-52, 36}, {-58, 36}, {-58, 6}}, color = {0, 127, 0}));
+      end LinearCorner;
+    end Suspension;
+
+    model BaseSteering
+  Modelica.Blocks.Interfaces.RealInput delta(unit="rad") annotation(
+        Placement(transformation(origin = {-100, 60}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-66, 46}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Mechanics.Rotational.Interfaces.Flange_b rackL annotation(
+        Placement(transformation(origin = {0, -100}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-24, 12}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Rotational.Interfaces.Flange_b rackR annotation(
+        Placement(transformation(origin = {0, 100}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-86, -60}, extent = {{-10, -10}, {10, 10}})));
+    equation
+
+    end BaseSteering;
   end Components;
 
   package Wheels
@@ -522,6 +571,8 @@ package AlyssaModel
   record parameters
     import Modelica.Units.SI;
     import Modelica.Units.Conversions.from_deg;
+    import Modelica.Constants.g_n;
+    import Modelica.Constants.pi;
     parameter SI.Force fzRef1 = 2000;
     parameter SI.Force fzRef2 = 6000;
     parameter Real muXMax1 = 1.75;
@@ -537,9 +588,32 @@ package AlyssaModel
     parameter Real smoothingEpsilon = 1e-6;
     // vehicle parameters
     // TODO: add vehicle mass, inertias (currently live in VehicleBody)
+    parameter SI.Mass vehicleMass = 768;
+    parameter SI.Mass unsprungMass = 100;
+    parameter SI.Mass mUnsprung = unsprungMass/4;
+    parameter SI.Mass mSpring = vehicleMass - unsprungMass "sprung mass";
+    
+    // suspension
+    parameter SI.TranslationalSpringConstant kz = 250000 "tire vertical stiffness";
+    parameter SI.Frequency fRideFront = 4.0;
+    parameter SI.Frequency fRideRear = 4.5;
+    final parameter SI.Mass mSprung = vehicleMass - 4*mUnsprung;
+    final parameter SI.Force F0Front = mSprung*Modelica.Constants.g_n*(b/wheelbase)/2;
+    final parameter SI.Force F0Rear = mSprung*Modelica.Constants.g_n*(a/wheelbase)/2;
+    final parameter SI.TranslationalSpringConstant kRideFront = (F0Front/Modelica.Constants.g_n)*(2*Modelica.Constants.pi*fRideFront)^2;
+    final parameter SI.TranslationalSpringConstant kRideRear = (F0Rear/Modelica.Constants.g_n)*(2*Modelica.Constants.pi*fRideRear)^2;
+    final parameter SI.TranslationalSpringConstant kFront = kRideFront*kz/(kz - kRideFront);
+    final parameter SI.TranslationalSpringConstant kRear = kRideRear*kz/(kz - kRideRear);
+    
+    
+    parameter SI.Inertia Ixx = 250;
+    parameter SI.Inertia Iyy = 350;
+    parameter SI.Inertia Izz = 500;
+    
     parameter SI.Length wheelbase = 3.6;
     parameter SI.Length tf = 2.0 "front trackwidth";
     parameter SI.Length tr = 2.0 "rear trackwidth";
+    parameter SI.Length track = tf + tr;
     parameter SI.Length a = 1.9 "cg to front axle";
     parameter SI.Length b = 1.7 "cg to rear axle";
     parameter Real ackermann = 0.0 "0 = parallel, 1 = full ackerman, <0 = anti";
