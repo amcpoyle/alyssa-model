@@ -99,7 +99,7 @@ package AlyssaModel
         Placement(transformation(origin = {74, -24}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
       Modelica.Mechanics.MultiBody.Parts.FixedTranslation armR(r = {0, vehicleParams.tf/2, dzHub}) annotation(
         Placement(transformation(origin = {74, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Steering steering annotation(
+      Steering steering annotation(
         Placement(transformation(origin = {-50, 30}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(subFrameFront, armL.frame_a) annotation(
@@ -114,7 +114,7 @@ package AlyssaModel
         Line(points = {{-41, 36}, {21.5, 36}, {21.5, 44}, {74, 44}}, color = {95, 95, 95}));
       connect(steering.frame_aL, armL.frame_b) annotation(
         Line(points = {{-40, 24}, {17, 24}, {17, -34}, {74, -34}}, color = {95, 95, 95}));
-  connect(delta, steering.delta) annotation(
+      connect(delta, steering.delta) annotation(
         Line(points = {{-100, 70}, {-54, 70}, {-54, 30}}, color = {0, 0, 127}));
     end FrontSuspension;
 
@@ -161,68 +161,66 @@ package AlyssaModel
     end RearSuspension;
 
     model Steering
-    
       parameter Modelica.Mechanics.MultiBody.Types.Axis nSteer = {0, 0, 1} "steer axis";
-  AlyssaModel.Components.SteeringComputation steeringComputation annotation(
+      AlyssaModel.Components.SteeringComputation steeringComputation annotation(
         Placement(transformation(origin = {-49, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Position posL(exact = true) annotation(
+      Modelica.Mechanics.Rotational.Sources.Position posL(exact = true) annotation(
         Placement(transformation(origin = {-10, -30}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Position posR(exact = true) annotation(
+      Modelica.Mechanics.Rotational.Sources.Position posR(exact = true) annotation(
         Placement(transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Revolute steerL(n = nSteer, useAxisFlange = true) annotation(
+      Modelica.Mechanics.MultiBody.Joints.Revolute steerL(n = nSteer, useAxisFlange = true) annotation(
         Placement(transformation(origin = {39, -61}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  Modelica.Mechanics.MultiBody.Joints.Revolute steerR(n = nSteer, useAxisFlange = true) annotation(
+      Modelica.Mechanics.MultiBody.Joints.Revolute steerR(n = nSteer, useAxisFlange = true) annotation(
         Placement(transformation(origin = {39, 59}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  Modelica.Blocks.Interfaces.RealInput delta(unit = "rad") annotation(
+      Modelica.Blocks.Interfaces.RealInput delta(unit = "rad") annotation(
         Placement(transformation(origin = {-101, 61}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-41, -3}, extent = {{-20, -20}, {20, 20}})));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bR annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bR annotation(
         Placement(transformation(origin = {0, 99}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {42, 83}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bL annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bL annotation(
         Placement(transformation(origin = {1, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {51, -74}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_aR annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_aR annotation(
         Placement(transformation(origin = {100, 60}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {94, 58}, extent = {{-16, -16}, {16, 16}})));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_aL annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_aL annotation(
         Placement(transformation(origin = {100, -60}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {98, -60}, extent = {{-16, -16}, {16, 16}})));
     equation
-  connect(delta, steeringComputation.delta) annotation(
+      connect(delta, steeringComputation.delta) annotation(
         Line(points = {{-100, 62}, {-54, 62}, {-54, 6}}, color = {0, 0, 127}));
-  connect(steeringComputation.deltaL, posL.phi_ref) annotation(
+      connect(steeringComputation.deltaL, posL.phi_ref) annotation(
         Line(points = {{-38, 4}, {-22, 4}, {-22, -30}}, color = {0, 0, 127}));
-  connect(steeringComputation.deltaR, posR.phi_ref) annotation(
+      connect(steeringComputation.deltaR, posR.phi_ref) annotation(
         Line(points = {{-40, -2}, {-22, -2}, {-22, 30}}, color = {0, 0, 127}));
-  connect(posR.flange, steerR.axis) annotation(
+      connect(posR.flange, steerR.axis) annotation(
         Line(points = {{0, 30}, {40, 30}, {40, 50}}));
-  connect(posL.flange, steerL.axis) annotation(
+      connect(posL.flange, steerL.axis) annotation(
         Line(points = {{0, -30}, {39, -30}, {39, -71}}));
-  connect(frame_bR, steerR.frame_b) annotation(
+      connect(frame_bR, steerR.frame_b) annotation(
         Line(points = {{0, 100}, {30, 100}, {30, 60}}));
-  connect(frame_bL, steerL.frame_b) annotation(
+      connect(frame_bL, steerL.frame_b) annotation(
         Line(points = {{2, -100}, {30, -100}, {30, -60}}));
-  connect(steerR.frame_a, frame_aR) annotation(
+      connect(steerR.frame_a, frame_aR) annotation(
         Line(points = {{50, 60}, {100, 60}}, color = {95, 95, 95}));
-  connect(steerL.frame_a, frame_aL) annotation(
+      connect(steerL.frame_a, frame_aL) annotation(
         Line(points = {{50, -60}, {100, -60}}, color = {95, 95, 95}));
     end Steering;
 
     package Suspension
-    model BaseCorner
+      partial model BaseCorner
         parameter Integer side "+1 = right, -1 = left; mirrors toe, camber, hardpoints";
         Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisConnect annotation(
           Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-120, -74}, extent = {{-16, -16}, {16, 16}})));
         Modelica.Mechanics.MultiBody.Interfaces.Frame_b wheelConnect annotation(
           Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {74, 4}, extent = {{-16, -16}, {16, 16}})));
-        Modelica.Mechanics.Rotational.Interfaces.Flange_a rackConnect annotation(
-          Placement(transformation(origin = {-100, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-82, -40}, extent = {{-10, -10}, {10, 10}})));
+        Modelica.Mechanics.MultiBody.Interfaces.Frame_a tieRodInner annotation(
+          Placement(transformation(origin = {-100, 40}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-104, 50}, extent = {{-16, -16}, {16, 16}})));
       equation
 
       end BaseCorner;
 
       model Suspension
         import Modelica.Units.SI;
-        
-        parameter Modelica.Units.SI.Position dzHub = 0 annotation(Dialog);
-        
-    parameters vehicleParams annotation(
+        parameter Modelica.Units.SI.Position dzHub = 0 annotation(
+          Dialog);
+        parameters vehicleParams annotation(
           Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
       equation
 
@@ -231,31 +229,118 @@ package AlyssaModel
       model LinearCorner
         extends AlyssaModel.Components.Suspension.BaseCorner;
         import Modelica.Units.SI;
-        
         parameter SI.Force F0 "static spring preload";
-        
-  Modelica.Mechanics.MultiBody.Joints.Prismatic travel(useAxisFlange = true, n = {0, 0, 1}, s(start = 0, fixed = true), v(start = 0, fixed = true))  annotation(
+        Modelica.Mechanics.MultiBody.Joints.Prismatic travel(useAxisFlange = true, n = {0, 0, 1}, s(start = 0, fixed = true), v(start = 0, fixed = true)) annotation(
           Placement(transformation(origin = {-66, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Translational.Components.SpringDamper springDamper annotation(
+        Modelica.Mechanics.Translational.Components.SpringDamper springDamper annotation(
           Placement(transformation(origin = {-62, 36}, extent = {{-10, -10}, {10, 10}})));
       equation
-  connect(springDamper.flange_a, travel.support) annotation(
+        connect(springDamper.flange_a, travel.support) annotation(
           Line(points = {{-72, 36}, {-72, 29}, {-70, 29}, {-70, 6}}, color = {0, 127, 0}));
-  connect(springDamper.flange_b, travel.axis) annotation(
+        connect(springDamper.flange_b, travel.axis) annotation(
           Line(points = {{-52, 36}, {-58, 36}, {-58, 6}}, color = {0, 127, 0}));
       end LinearCorner;
+
+      package Hardpoints
+        record BaseHardpoints
+          import Modelica.Units.SI;
+          import Modelica.Units.Conversions.from_deg;
+          
+          parameter SI.Position front_rWC[3] = {0, 1.0, 0} "subframe -> wheel center position, right side";
+          parameter SI.Position front_rUBJ[3] = {-0.02, 0.85, -0.20} "upper ball joint";
+          parameter SI.Position front_rLBJ[3] = {0.02, 0.94, 0.15} "lower ball joint (defines kp axis)";
+          parameter SI.Position front_rTieOuter[3] = {-0.12, 0.92, 0.10} "outer tie rod ball, on the knuckle";
+          parameter SI.Position front_rTieInner[3] = {-0.12, 0.40, 0.10} "inner tie rod ball, on the rack end";
+          parameter SI.Angle front_staticCamber = from_deg(0);
+          parameter SI.Angle front_staticToe = from_deg(0);
+          
+          parameter SI.Position rear_rWC[3] = {0, 1.0, 0} "subframe -> wheel center position, right side";
+          parameter SI.Position rear_rUBJ[3] = {0, 0.87, -0.20} "upper ball joint";
+          parameter SI.Position rear_rLBJ[3] = {0, 0.95, 0.15} "lower ball joint (defines kp axis)";
+          parameter SI.Position rear_rTieOuter[3] = {-0.10, 0.93, 0.08} "outer tie rod ball, on the knuckle";
+          parameter SI.Position rear_rTieInner[3] = {-0.10, 0.35, 0.08} "inner tie rod ball, on the rack end";
+          parameter SI.Angle rear_staticCamber = from_deg(-1.2);
+          parameter SI.Angle rear_staticToe = from_deg(0.15);
+          
+        
+        end BaseHardpoints;
+      end Hardpoints;
     end Suspension;
 
-    model BaseSteering
-  Modelica.Blocks.Interfaces.RealInput delta(unit="rad") annotation(
+    partial model BaseSteering
+      Modelica.Blocks.Interfaces.RealInput delta(unit = "rad") annotation(
         Placement(transformation(origin = {-100, 60}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-66, 46}, extent = {{-20, -20}, {20, 20}})));
-  Modelica.Mechanics.Rotational.Interfaces.Flange_b rackL annotation(
-        Placement(transformation(origin = {0, -100}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-24, 12}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Interfaces.Flange_b rackR annotation(
-        Placement(transformation(origin = {0, 100}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-86, -60}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisConnect annotation(
+        Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-82, -12}, extent = {{-16, -16}, {16, 16}})));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b tieRodInnerL annotation(
+        Placement(transformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {-30, -68}, extent = {{-16, -16}, {16, 16}})));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b tieRodInnerR annotation(
+        Placement(transformation(origin = {0, 100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {2, 42}, extent = {{-16, -16}, {16, 16}})));
     equation
 
     end BaseSteering;
+
+    model RackSteering
+      extends AlyssaModel.Components.BaseSteering;
+      parameter Real rackRatio = 0.12 "m/rad" annotation(
+        Dialog);
+      Suspension.Hardpoints.BaseHardpoints hp annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation housing(r = {hp.front_rTieInner[1], 0, hp.front_rTieInner[3]}) annotation(
+        Placement(transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Joints.Prismatic rack(useAxisFlange = true, n = {0, 1, 0}, s(start = 0, fixed = true)) annotation(
+        Placement(transformation(extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.Translational.Sources.Position pos(useSupport = true, exact = true) annotation(
+        Placement(transformation(origin = {-24, 48}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Math.Gain ratioRatioGain(k = rackRatio) annotation(
+        Placement(transformation(origin = {-62, 60}, extent = {{-6, -6}, {6, 6}})));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation endL(r = {0, -hp.front_rTieInner[2], 0}) annotation(
+        Placement(transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation endR(r = {0, hp.front_rTieInner[2], 0}) annotation(
+        Placement(transformation(origin = {0, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+    equation
+      connect(delta, ratioRatioGain.u) annotation(
+        Line(points = {{-100, 60}, {-69, 60}}, color = {0, 0, 127}));
+      connect(ratioRatioGain.y, pos.s_ref) annotation(
+        Line(points = {{-55, 60}, {-36, 60}, {-36, 48}}, color = {0, 0, 127}));
+      connect(pos.flange, rack.axis) annotation(
+        Line(points = {{-14, 48}, {-14, 31}, {0, 31}, {0, 20.5}, {8, 20.5}, {8, 6}}, color = {0, 127, 0}));
+      connect(pos.support, rack.support) annotation(
+        Line(points = {{-24, 38}, {-15, 38}, {-15, 22}, {-4, 22}, {-4, 6}}, color = {0, 127, 0}));
+      connect(housing.frame_b, rack.frame_a) annotation(
+        Line(points = {{-60, 0}, {-10, 0}}, color = {95, 95, 95}));
+      connect(housing.frame_a, chassisConnect) annotation(
+        Line(points = {{-80, 0}, {-100, 0}}, color = {95, 95, 95}));
+      connect(rack.frame_b, endR.frame_a) annotation(
+        Line(points = {{10, 0}, {0, 0}, {0, 60}}, color = {95, 95, 95}));
+      connect(rack.frame_b, endL.frame_a) annotation(
+        Line(points = {{10, 0}, {0, 0}, {0, -60}}, color = {95, 95, 95}));
+      connect(endL.frame_b, tieRodInnerL) annotation(
+        Line(points = {{0, -80}, {0, -100}}, color = {95, 95, 95}));
+      connect(tieRodInnerR, endR.frame_b) annotation(
+        Line(points = {{0, 100}, {0, 80}}));
+      connect(tieRodInnerL, endL.frame_b) annotation(
+        Line(points = {{0, -100}, {0, -80}}));
+    end RackSteering;
+
+    model FixedToeLinks
+      extends AlyssaModel.Components.BaseSteering;
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation toeLinkR(r = {hp.rear_rTieInner[1], hp.rear_rTieInner[2], hp.rear_rTieInner[3]}) annotation(
+        Placement(transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation toeLinkL(r = {hp.rear_rTieInner[1], -hp.rear_rTieInner[2], hp.rear_rTieInner[3]}) annotation(
+        Placement(transformation(origin = {0, -30}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+      Suspension.Hardpoints.BaseHardpoints hp annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+    equation
+  connect(chassisConnect, toeLinkL.frame_a) annotation(
+        Line(points = {{-100, 0}, {0, 0}, {0, -20}}));
+  connect(chassisConnect, toeLinkR.frame_a) annotation(
+        Line(points = {{-100, 0}, {0, 0}, {0, 40}}));
+  connect(toeLinkR.frame_b, tieRodInnerR) annotation(
+        Line(points = {{0, 60}, {0, 100}}, color = {95, 95, 95}));
+  connect(toeLinkL.frame_b, tieRodInnerL) annotation(
+        Line(points = {{0, -40}, {0, -100}}, color = {95, 95, 95}));
+    end FixedToeLinks;
   end Components;
 
   package Wheels
@@ -311,7 +396,7 @@ package AlyssaModel
       import Modelica.Units.SI;
       parameter SI.Radius rEff = 0.33 "effective rolling radius" annotation(
         Dialog);
-      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFlange(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFlange(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {99, -1}, extent = {{-13, -13}, {13, 13}}), iconTransformation(origin = {100, -4}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Blocks.Interfaces.RealInput mu annotation(
         Placement(transformation(origin = {-100, 69}, extent = {{-8, -8}, {8, 8}}), iconTransformation(origin = {-80, 70}, extent = {{-20, -20}, {20, 20}})));
@@ -415,7 +500,7 @@ package AlyssaModel
         Placement(transformation(origin = {42, -20}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a annotation(
         Placement(transformation(origin = {-100, 40}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-80, 32}, extent = {{-16, -16}, {16, 16}})));
-      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor adaptor(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor adaptor(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {68, 28}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
     equation
       tauRoll = crr*Functions.smoothMax(fz, 0.0)*rEff*rotor1D.w/sqrt(rotor1D.w^2 + wEps^2) "crr*fz*rEff, smoothed out";
@@ -438,7 +523,7 @@ package AlyssaModel
         Line(points = {{-80, -10}, {-100, -10}, {-100, 40}}, color = {95, 95, 95}));
       connect(mounting1D.frame_a, frame_a) annotation(
         Line(points = {{-40, 0}, {-100, 0}, {-100, 40}}, color = {95, 95, 95}));
-  connect(adaptor.frame, frame_a) annotation(
+      connect(adaptor.frame, frame_a) annotation(
         Line(points = {{68, 38}, {-100, 38}, {-100, 40}}, color = {95, 95, 95}));
     end Rim;
 
@@ -479,7 +564,6 @@ package AlyssaModel
 
     model ContactPatch "slip dynamics needs the velocity of CP in the wheel frame"
       import Modelica.Units.SI;
-       
       parameter SI.Radius rEff = 0.33 "effective rolling radius" annotation(
         Dialog);
       parameter SI.Radius r0 = 0.33 "unloaded radius" annotation(
@@ -490,7 +574,6 @@ package AlyssaModel
         Dialog);
       SI.Length pen "tire vertical deflection";
       SI.Length zRoad "road surface elevation under the hub";
-      
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "hub frame, SAE coordinates" annotation(
         Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-82, 0}, extent = {{-16, -16}, {16, 16}})));
       Modelica.Blocks.Interfaces.RealOutput vx(unit = "m/s") annotation(
@@ -503,7 +586,6 @@ package AlyssaModel
         Placement(transformation(origin = {-100, 49}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 40}, extent = {{-20, -20}, {20, 20}})));
       Modelica.Blocks.Interfaces.RealOutput fz(unit = "N") annotation(
         Placement(transformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}})));
-    
       outer Roads.BaseRoad road annotation(
         Placement(transformation(origin = {-70, -88}, extent = {{-10, -10}, {10, 10}})));
     protected
@@ -514,7 +596,6 @@ package AlyssaModel
 // pen = Functions.smoothMax(r0 + frame_a.r_0[3], 0.0);
       zRoad = road.z0 + road.height(frame_a.r_0[1], frame_a.r_0[2]);
       pen = Functions.smoothMax(r0 + frame_a.r_0[3] - zRoad, 0.0);
-      
       fz = Functions.smoothMax(kz*pen + cz*der(pen), 0.0);
       frame_a.f = -{fx, fy, -fz} "sae coordinates forces, -fz = road pushing tire up";
       frame_a.t = -cross({0, 0, rEff}, {fx, fy, -fz});
@@ -592,7 +673,6 @@ package AlyssaModel
     parameter SI.Mass unsprungMass = 100;
     parameter SI.Mass mUnsprung = unsprungMass/4;
     parameter SI.Mass mSpring = vehicleMass - unsprungMass "sprung mass";
-    
     // suspension
     parameter SI.TranslationalSpringConstant kz = 250000 "tire vertical stiffness";
     parameter SI.Frequency fRideFront = 4.0;
@@ -604,12 +684,9 @@ package AlyssaModel
     final parameter SI.TranslationalSpringConstant kRideRear = (F0Rear/Modelica.Constants.g_n)*(2*Modelica.Constants.pi*fRideRear)^2;
     final parameter SI.TranslationalSpringConstant kFront = kRideFront*kz/(kz - kRideFront);
     final parameter SI.TranslationalSpringConstant kRear = kRideRear*kz/(kz - kRideRear);
-    
-    
     parameter SI.Inertia Ixx = 250;
     parameter SI.Inertia Iyy = 350;
     parameter SI.Inertia Izz = 500;
-    
     parameter SI.Length wheelbase = 3.6;
     parameter SI.Length tf = 2.0 "front trackwidth";
     parameter SI.Length tr = 2.0 "rear trackwidth";
@@ -649,13 +726,13 @@ package AlyssaModel
         Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
       Components.RearSuspension rearSuspension annotation(
         Placement(transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFR(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFR(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {-70, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-75, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFL(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFL(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {-72, -98}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-75, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRR(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRR(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {70, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {75, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRL(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRL(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {70, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {75, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
       Modelica.Blocks.Interfaces.RealInput delta(unit = "rad") annotation(
         Placement(transformation(origin = {-150, 72}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-150, 72}, extent = {{-14, -14}, {14, 14}})));
@@ -663,7 +740,7 @@ package AlyssaModel
         Placement(transformation(origin = {-150, 50}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-150, 50}, extent = {{-14, -14}, {14, 14}})));
       Modelica.Blocks.Interfaces.RealOutput w[4](each unit = "rad/s") "wheel speeds output, FL FR RL RR" annotation(
         Placement(transformation(origin = {150, -72}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {136, -20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisFrame annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisFrame annotation(
         Placement(transformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {-34, -132}, extent = {{-16, -16}, {16, 16}})));
     equation
       connect(frontSuspension.subFrameFront, vehicleBody.subFrameFront) annotation(
@@ -704,7 +781,7 @@ package AlyssaModel
         Line(points = {{-150, 50}, {-62, 50}, {-62, -56}}, color = {0, 0, 127}));
       connect(mu, wheelRL.mu) annotation(
         Line(points = {{-150, 50}, {62, 50}, {62, -42}}, color = {0, 0, 127}));
-  connect(vehicleBody.chassisFrame, chassisFrame) annotation(
+      connect(vehicleBody.chassisFrame, chassisFrame) annotation(
         Line(points = {{0, -8}, {0, -100}}, color = {95, 95, 95}));
       annotation(
         Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-150, -100}, {150, 100}}), graphics = {Rectangle(extent = {{-150, -100}, {150, 100}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Bitmap(extent = {{-90, -90}, {90, 90}}, fileName = "modelica://AlyssaModel/Resources/Images/Lightning_McQueen.png"), Text(extent = {{-100, -135}, {100, -105}}, textString = "%name")}));
@@ -712,7 +789,7 @@ package AlyssaModel
   end Vehicles;
 
   package Experiments
-      model OptimalControl
+    model OptimalControl
       Vehicles.AlyssaVehicle vehicle annotation(
         Placement(transformation(origin = {-49.5, -1}, extent = {{-31.5, -21}, {31.5, 21}})));
       Modelica.Blocks.Sources.Constant mu(k = 1.0) annotation(
@@ -725,9 +802,9 @@ package AlyssaModel
         Placement(transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}})));
       Rigs.Rig rig annotation(
         Placement(transformation(origin = {40, 0}, extent = {{-20, -20}, {20, 20}})));
-  Modelica.Blocks.Interfaces.RealInput throttle annotation(
+      Modelica.Blocks.Interfaces.RealInput throttle annotation(
         Placement(transformation(origin = {-100, 80}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 80}, extent = {{-12, -12}, {12, 12}})));
-  Modelica.Blocks.Interfaces.RealInput steer annotation(
+      Modelica.Blocks.Interfaces.RealInput steer annotation(
         Placement(transformation(origin = {-100, 60}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 60}, extent = {{-12, -12}, {12, 12}})));
     equation
       connect(world.frame_b, rig.worldFrame) annotation(
@@ -744,29 +821,29 @@ package AlyssaModel
         Line(points = {{-34, -22}, {56, -22}, {56, -20}}, color = {135, 135, 135}));
       connect(rig.hubFL, vehicle.hubFL) annotation(
         Line(points = {{26, -20}, {-20, -20}, {-20, -22}, {-66, -22}}, color = {135, 135, 135}));
-  connect(throttle, rigController.throttle) annotation(
+      connect(throttle, rigController.throttle) annotation(
         Line(points = {{-100, 80}, {26, 80}, {26, 70}}, color = {0, 0, 127}));
-  connect(steer, rigController.steer) annotation(
+      connect(steer, rigController.steer) annotation(
         Line(points = {{-100, 60}, {26, 60}, {26, 64}}, color = {0, 0, 127}));
-  connect(vehicle.w, rigController.w) annotation(
+      connect(vehicle.w, rigController.w) annotation(
         Line(points = {{-20, -6}, {26, -6}, {26, 76}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(vehicle.mu, mu.y) annotation(
+      connect(vehicle.mu, mu.y) annotation(
         Line(points = {{-80, 10}, {-119, 10}}, color = {0, 0, 127}));
-  connect(vehicle.delta, rigController.delta) annotation(
+      connect(vehicle.delta, rigController.delta) annotation(
         Line(points = {{-80, 14}, {52, 14}, {52, 56}}, color = {0, 0, 127}));
     end OptimalControl;
 
     model FlatRoadSim
-  OptimalControl optimalControl annotation(
+      OptimalControl optimalControl annotation(
         Placement(transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant throttleInput(k = 0.2)  annotation(
+      Modelica.Blocks.Sources.Constant throttleInput(k = 0.2) annotation(
         Placement(transformation(origin = {-84, 20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant steerInput(k = 0.1)  annotation(
+      Modelica.Blocks.Sources.Constant steerInput(k = 0.1) annotation(
         Placement(transformation(origin = {-84, -12}, extent = {{-10, -10}, {10, 10}})));
     equation
-  connect(throttleInput.y, optimalControl.throttle) annotation(
+      connect(throttleInput.y, optimalControl.throttle) annotation(
         Line(points = {{-72, 20}, {-8, 20}, {-8, 8}}, color = {0, 0, 127}));
-  connect(steerInput.y, optimalControl.steer) annotation(
+      connect(steerInput.y, optimalControl.steer) annotation(
         Line(points = {{-72, -12}, {-8, -12}, {-8, 6}}, color = {0, 0, 127}));
     end FlatRoadSim;
   end Experiments;
@@ -894,123 +971,122 @@ package AlyssaModel
     model Rig
       Modelica.Blocks.Interfaces.RealInput tau[4](each unit = "N.m") annotation(
         Placement(transformation(origin = {-100, 54}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-34, 56}, extent = {{-20, -20}, {20, 20}})));
-    MotionBlocks.FreeMotionPlanar motion annotation(
+      MotionBlocks.FreeMotionPlanar motion annotation(
         Placement(transformation(extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameFR(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameFR(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {-48, 68}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameRR(includeBearingConnector = true) annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameRR(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {39, 69}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameFL(includeBearingConnector = true) annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameFL(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {-60, -64}, extent = {{-16, -16}, {16, 16}}, rotation = 90)));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameRL(includeBearingConnector = true) annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearingAdaptor hubFrameRL(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {60, -65}, extent = {{-16, -16}, {16, 16}}, rotation = 90)));
-  Modelica.Mechanics.Rotational.Sources.Torque torqueFR(useSupport = true)  annotation(
+      Modelica.Mechanics.Rotational.Sources.Torque torqueFR(useSupport = true) annotation(
         Placement(transformation(origin = {-58, 44}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Torque torqueRR(useSupport = true)  annotation(
+      Modelica.Mechanics.Rotational.Sources.Torque torqueRR(useSupport = true) annotation(
         Placement(transformation(origin = {30, 44}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Torque torqueFL(useSupport = true)  annotation(
+      Modelica.Mechanics.Rotational.Sources.Torque torqueFL(useSupport = true) annotation(
         Placement(transformation(origin = {-70, -40}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.Rotational.Sources.Torque torqueRL(useSupport = true)  annotation(
+      Modelica.Mechanics.Rotational.Sources.Torque torqueRL(useSupport = true) annotation(
         Placement(transformation(origin = {50, -40}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_a worldFrame annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a worldFrame annotation(
         Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-116, 2}, extent = {{-16, -16}, {16, 16}})));
-  Modelica.Mechanics.MultiBody.Interfaces.Frame_b vehicleFrame annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b vehicleFrame annotation(
         Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {86, 6}, extent = {{-16, -16}, {16, 16}})));
-  Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DFR(n = {0, -1, 0})  annotation(
+      Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DFR(n = {0, -1, 0}) annotation(
         Placement(transformation(origin = {-82, 88}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFR(includeBearingConnector = true)  annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFR(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {-48, 102}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-75, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRR(includeBearingConnector = true) annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRR(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {40, 102}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {75, 100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DRR(n = {0, -1, 0}) annotation(
+      Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DRR(n = {0, -1, 0}) annotation(
         Placement(transformation(origin = {10, 90}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRL(includeBearingConnector = true) annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubRL(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {61, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {75, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DRL(n = {0, -1, 0}) annotation(
+      Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DRL(n = {0, -1, 0}) annotation(
         Placement(transformation(origin = {85, -38}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFL(includeBearingConnector = true) annotation(
+      Modelica.Mechanics.MultiBody.Interfaces.FlangeWithBearing hubFL(includeBearingConnector = true) annotation(
         Placement(transformation(origin = {-60, -99}, extent = {{-10, -10}, {10, 10}}, rotation = -90), iconTransformation(origin = {-75, -100}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DFL(n = {0, -1, 0}) annotation(
+      Modelica.Mechanics.MultiBody.Parts.Mounting1D mounting1DFL(n = {0, -1, 0}) annotation(
         Placement(transformation(origin = {-44, -41}, extent = {{-10, -10}, {10, 10}})));
     equation
-  connect(tau[1], torqueFL.tau) annotation(
+      connect(tau[1], torqueFL.tau) annotation(
         Line(points = {{-100, 54}, {-100, 70}, {-82, 70}, {-82, -40}}, color = {0, 0, 127}));
-  connect(tau[3], torqueRL.tau) annotation(
+      connect(tau[3], torqueRL.tau) annotation(
         Line(points = {{-100, 54}, {-100, 70}, {38, 70}, {38, -40}}, color = {0, 0, 127}));
-  connect(torqueFR.flange, hubFrameFR.flange) annotation(
+      connect(torqueFR.flange, hubFrameFR.flange) annotation(
         Line(points = {{-48, 44}, {-48, 68}}));
-  connect(torqueRR.flange, hubFrameRR.flange) annotation(
+      connect(torqueRR.flange, hubFrameRR.flange) annotation(
         Line(points = {{40, 44}, {40, 57}, {39, 57}, {39, 69}}));
-  connect(torqueFL.flange, hubFrameFL.flange) annotation(
+      connect(torqueFL.flange, hubFrameFL.flange) annotation(
         Line(points = {{-60, -40}, {-60, -64}}));
-  connect(torqueRL.flange, hubFrameRL.flange) annotation(
+      connect(torqueRL.flange, hubFrameRL.flange) annotation(
         Line(points = {{60, -40}, {60, -64}}));
-  connect(worldFrame, motion.worldFrame) annotation(
+      connect(worldFrame, motion.worldFrame) annotation(
         Line(points = {{-100, 0}, {-2, 0}, {-2, 2}}));
-  connect(motion.vehicleFrame, vehicleFrame) annotation(
+      connect(motion.vehicleFrame, vehicleFrame) annotation(
         Line(points = {{-8, 0}, {100, 0}}, color = {95, 95, 95}));
-  connect(tau[2], torqueFR.tau) annotation(
+      connect(tau[2], torqueFR.tau) annotation(
         Line(points = {{-100, 54}, {-70, 54}, {-70, 44}}, color = {0, 0, 127}));
-  connect(torqueFR.support, mounting1DFR.flange_b) annotation(
+      connect(torqueFR.support, mounting1DFR.flange_b) annotation(
         Line(points = {{-58, 34}, {-72, 34}, {-72, 88}}));
-  connect(hubFR, hubFrameFR.flangeAndFrame) annotation(
+      connect(hubFR, hubFrameFR.flangeAndFrame) annotation(
         Line(points = {{-48, 102}, {-48, 84}}));
-  connect(mounting1DFR.frame_a, hubFrameFR.frame) annotation(
+      connect(mounting1DFR.frame_a, hubFrameFR.frame) annotation(
         Line(points = {{-82, 78}, {-64, 78}, {-64, 68}}, color = {95, 95, 95}));
-  connect(tau[4], torqueRR.tau) annotation(
+      connect(tau[4], torqueRR.tau) annotation(
         Line(points = {{-100, 54}, {16, 54}, {16, 45}, {18, 45}, {18, 44}}, color = {0, 0, 127}));
-  connect(hubRR, hubFrameRR.flangeAndFrame) annotation(
+      connect(hubRR, hubFrameRR.flangeAndFrame) annotation(
         Line(points = {{40, 102}, {40, 86}}));
-  connect(mounting1DRR.flange_b, torqueRR.support) annotation(
+      connect(mounting1DRR.flange_b, torqueRR.support) annotation(
         Line(points = {{20, 90}, {30, 90}, {30, 34}}));
-  connect(mounting1DRR.frame_a, hubFrameRR.frame) annotation(
+      connect(mounting1DRR.frame_a, hubFrameRR.frame) annotation(
         Line(points = {{10, 80}, {24, 80}, {24, 70}}, color = {95, 95, 95}));
-  connect(mounting1DFL.frame_a, hubFrameFL.frame) annotation(
+      connect(mounting1DFL.frame_a, hubFrameFL.frame) annotation(
         Line(points = {{-44, -50}, {-44, -64}}, color = {95, 95, 95}));
-  connect(torqueFL.support, mounting1DFL.flange_b) annotation(
+      connect(torqueFL.support, mounting1DFL.flange_b) annotation(
         Line(points = {{-70, -50}, {-34, -50}, {-34, -40}}));
-  connect(hubFrameFL.flangeAndFrame, hubFL) annotation(
+      connect(hubFrameFL.flangeAndFrame, hubFL) annotation(
         Line(points = {{-60, -80}, {-60, -98}}, color = {135, 135, 135}));
-  connect(torqueRL.support, mounting1DRL.flange_b) annotation(
+      connect(torqueRL.support, mounting1DRL.flange_b) annotation(
         Line(points = {{50, -50}, {96, -50}, {96, -38}}));
-  connect(hubFrameRL.frame, mounting1DRL.frame_a) annotation(
+      connect(hubFrameRL.frame, mounting1DRL.frame_a) annotation(
         Line(points = {{76, -64}, {86, -64}, {86, -48}}, color = {95, 95, 95}));
-  connect(hubFrameRL.flangeAndFrame, hubRL) annotation(
+      connect(hubFrameRL.flangeAndFrame, hubRL) annotation(
         Line(points = {{60, -80}, {62, -80}, {62, -100}}, color = {135, 135, 135}));
     end Rig;
   end Rigs;
 
   package Roads
-     
-model BaseRoad
-  import Modelica.Units.SI;
-  parameter SI.Position z0 = 0 "road elevation, SAE +z down";
-  parameter Real muRef = 1.0 "surface friction";
-  
-  replaceable function height "surface shape, relative to z0"
-    input SI.Position x;
-    input SI.Position y;
-    output SI.Position z;
-  algorithm
-    z := 0;
-    annotation(
-      smoothOrder = 2,
-      Inline = true);
-  end height;
-  
-  replaceable function mu "friction shape, multiplies muRef"
-    input SI.Position x;
-    input SI.Position y;
-    output Real m;
-  algorithm
-    m := 1.0;
-    annotation(
-      smoothOrder = 2,
-      Inline = true);
-  end mu;
-  
-  annotation(Icon(graphics = {Rectangle(extent = {{-150, -100}, {150, 100}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Bitmap(extent = {{-150, -100}, {150, 100}}, fileName = "modelica://AlyssaModel/Resources/Images/road_icon.png"), Text(extent = {{-100, -135}, {100, -105}}, textString = "%name")}));
-end BaseRoad;
+    model BaseRoad
+      import Modelica.Units.SI;
+      parameter SI.Position z0 = 0 "road elevation, SAE +z down";
+      parameter Real muRef = 1.0 "surface friction";
+
+      replaceable function height "surface shape, relative to z0"
+        input SI.Position x;
+        input SI.Position y;
+        output SI.Position z;
+      algorithm
+        z := 0;
+        annotation(
+          smoothOrder = 2,
+          Inline = true);
+      end height;
+
+      replaceable function mu "friction shape, multiplies muRef"
+        input SI.Position x;
+        input SI.Position y;
+        output Real m;
+      algorithm
+        m := 1.0;
+        annotation(
+          smoothOrder = 2,
+          Inline = true);
+      end mu;
+      annotation(
+        Icon(graphics = {Rectangle(extent = {{-150, -100}, {150, 100}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Bitmap(extent = {{-150, -100}, {150, 100}}, fileName = "modelica://AlyssaModel/Resources/Images/road_icon.png"), Text(extent = {{-100, -135}, {100, -105}}, textString = "%name")}));
+    end BaseRoad;
 
     model FlatRoad
       extends AlyssaModel.Roads.BaseRoad;
