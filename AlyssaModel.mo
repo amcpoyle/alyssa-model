@@ -288,20 +288,20 @@ package AlyssaModel
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.MultiBody.Parts.FixedTranslation housing(r = {hp.front_rTieInner[1], 0, hp.front_rTieInner[3]}) annotation(
         Placement(transformation(origin = {-70, 0}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Joints.Prismatic rack(useAxisFlange = true, n = {0, 1, 0}, s(start = 0, fixed = true)) annotation(
+      Modelica.Mechanics.MultiBody.Joints.Prismatic rack(useAxisFlange = true, n = {0, 1, 0}, s(start = 0, fixed = false)) annotation(
         Placement(transformation(extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.Translational.Sources.Position pos(useSupport = true, exact = true) annotation(
         Placement(transformation(origin = {-24, 48}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Blocks.Math.Gain ratioRatioGain(k = rackRatio) annotation(
+      Modelica.Blocks.Math.Gain rackRatioGain(k = rackRatio) annotation(
         Placement(transformation(origin = {-62, 60}, extent = {{-6, -6}, {6, 6}})));
       Modelica.Mechanics.MultiBody.Parts.FixedTranslation endL(r = {0, -hp.front_rTieInner[2], 0}) annotation(
         Placement(transformation(origin = {0, -70}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
       Modelica.Mechanics.MultiBody.Parts.FixedTranslation endR(r = {0, hp.front_rTieInner[2], 0}) annotation(
         Placement(transformation(origin = {0, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
     equation
-      connect(delta, ratioRatioGain.u) annotation(
+      connect(delta, rackRatioGain.u) annotation(
         Line(points = {{-100, 60}, {-69, 60}}, color = {0, 0, 127}));
-      connect(ratioRatioGain.y, pos.s_ref) annotation(
+      connect(rackRatioGain.y, pos.s_ref) annotation(
         Line(points = {{-55, 60}, {-36, 60}, {-36, 48}}, color = {0, 0, 127}));
       connect(pos.flange, rack.axis) annotation(
         Line(points = {{-14, 48}, {-14, 31}, {0, 31}, {0, 20.5}, {8, 20.5}, {8, 6}}, color = {0, 127, 0}));
@@ -315,8 +315,6 @@ package AlyssaModel
         Line(points = {{10, 0}, {0, 0}, {0, 60}}, color = {95, 95, 95}));
       connect(rack.frame_b, endL.frame_a) annotation(
         Line(points = {{10, 0}, {0, 0}, {0, -60}}, color = {95, 95, 95}));
-      connect(endL.frame_b, tieRodInnerL) annotation(
-        Line(points = {{0, -80}, {0, -100}}, color = {95, 95, 95}));
       connect(tieRodInnerR, endR.frame_b) annotation(
         Line(points = {{0, 100}, {0, 80}}));
       connect(tieRodInnerL, endL.frame_b) annotation(
