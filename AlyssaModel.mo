@@ -275,6 +275,22 @@ package AlyssaModel
           parameter SI.Angle rear_staticCamber = from_deg(-1.2);
           parameter SI.Angle rear_staticToe = from_deg(0.15);
           
+          // hardpoints for double wishbone
+          parameter SI.Position front_rUCAf[3] = {0.15, 0.51, -0.20} "position of the front upper control arm, front pivot";
+          parameter SI.Position front_rUCAr[3] = {-0.15, 0.51, -0.20} "front upper control arm, rear pivot";
+          parameter SI.Position front_rLCAf[3] = {0.15, 0.39, 0.15};
+          parameter SI.Position front_rLCAr[3] = {-0.15, 0.39, 0.15};
+          parameter SI.Position front_rSpringChassis[3] = {0, 0.62, -0.25};
+          parameter SI.Position front_rSpringArm[3] = {0, 0.78, 0.14};
+          
+          parameter SI.Position rear_rUCAf[3] = {0.15, 0.47, -0.20};
+          parameter SI.Position rear_rUCAr[3] = {-0.15, 0.47, -0.20};
+          parameter SI.Position rear_rLCAf[3] = {0.15, 0.33, 0.15};
+          parameter SI.Position rear_rLCAr[3] = {-0.15, 0.33, 0.15};
+          parameter SI.Position rear_rSpringChassis[3] = {0, 0.65, -0.25};
+          parameter SI.Position rear_rSpringArm[3] = {0, 0.80, 0.14};
+          
+          
         
         end BaseHardpoints;
       end Hardpoints;
@@ -335,6 +351,7 @@ package AlyssaModel
        // positive = bump
       toe = -side*wheelAngles.angles[1]; // positive = toe-in (including steer)
       camber = side*wheelAngles.angles[2];
+      
       end PartialUprightCorner;
 
       model RigidCorner
@@ -358,6 +375,90 @@ package AlyssaModel
   connect(carrier.frame_b, tieRod.frame_b) annotation(
           Line(points = {{-36, 16}, {-36, 38}}, color = {95, 95, 95}));
       end RigidCorner;
+
+      model DoubleWishboneCorner
+        import Modelica.Units.SI;
+        import Modelica.Math.Vectors.normalize;
+        
+        extends AlyssaModel.Components.Suspension.PartialUprightCorner(
+        final rKingpinTop = if isFront then hp.front_rUBJ else hp.rear_rUBJ,
+        final nKingpin = Modelica.Math.Vectors.normalize(if isFront then hp.front_rLBJ - hp.front_rUBJ else hp.rear_rLBJ - hp.rear_rUBJ),
+        final rWC = if isFront then hp.front_rWC else hp.rear_rWC,
+        final rTieOuter = if isFront then hp.front_rTieOuter else hp.rear_rTieOuter,
+        final rTieInner = if isFront then hp.front_rTieInner else hp.rear_rTieInner,
+        final staticCamber = if isFront then hp.front_staticCamber else hp.rear_staticCamber,
+        final staticToe = if isFront then hp.front_staticToe else hp.rear_staticToe,
+        final mUnsprung= if isFront then vehicleParams.mUnsprungFront else vehicleParams.mUnsprungRear
+        );
+  parameters vehicleParams annotation(
+          Placement(transformation(origin = {110, 92}, extent = {{-10, -10}, {10, 10}})));
+  Hardpoints.BaseHardpoints hp annotation(
+          Placement(transformation(origin = {134, 92}, extent = {{-10, -10}, {10, 10}})));
+      
+        final parameter SI.Position rUBJ[3] = if isFront then hp.front_rUBJ else hp.rear_rUBJ;
+        
+        final parameter SI.Position rLBJ[3] = if isFront then hp.front_rLBJ else hp.rear_rLBJ;
+        
+        final parameter SI.Position rUCAf[3] = if isFront then hp.front_rUCAf else hp.rear_rUCAf;
+        
+        final parameter SI.Position rUCAr[3] = if isFront then hp.front_rUCAr else hp.rear_rUCAr;
+        
+        final parameter SI.Position rLCAf[3] = if isFront then hp.front_rLCAf else hp.rear_rLCAf;
+        
+        final parameter SI.Position rLCAr[3] = if isFront then hp.front_rLCAr else hp.rear_rLCAr;
+        
+        final parameter SI.Position rSpringChassis[3] = if isFront then hp.front_rSpringChassis else hp.rear_rSpringChassis;
+        
+        final parameter SI.Position rSpringArm[3] = if isFront then hp.front_rSpringArm else hp.rear_rSpringArm;
+        
+        final parameter SI.Position rUCApivot[3] = (rUCAf + rUCAr)/2 "UCA pivot axis point (midpoint)";
+        final parameter SI.Position rLCApivot[3] = (rLCAf + rLCAr)/2 "LCA pivot axis point (midpoint)";
+        
+        final parameter SI.TranslationalSpringConstant kWheel = if isFront then vehicleParams.kFront else vehicleParams.kRear;
+        final parameter SI.TranslationalDampingConstant dWheel = if isFront then vehicleParams.dWheelFront else vehicleParams.dWheelRear;
+        final parameter SI.Force F0 = if isFront then vehicleParams.F0Front else vehicleParams.F0Rear "static sprung load per corner";
+        final parameter SI.Length sDesign = Modelica.Math.Vectors.norm(rSpringArm - rSpringChassis) "coilover length at design";
+        parameter Real motionRatio = if isFront then 0.665 else 0.713 "placeholder; measure on the rig";
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation ucaMount(r = Functions.mirrorY(rUCApivot, side))  annotation(
+          Placement(transformation(origin = {-4, -22}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Revolute ucaPivot(n = Functions.mirrorY(normalize(rUCAr - rUCAf), side), stateSelect = StateSelect.always, phi(start = 0, fixed = true), w(start = 0, fixed = true))  annotation(
+          Placement(transformation(origin = {24, -22}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation uca(r = Functions.mirrorY(rUBJ - rUCApivot, side))  annotation(
+          Placement(transformation(origin = {56, -22}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation lcaMount(r = Functions.mirrorY(rLCApivot, side))  annotation(
+          Placement(transformation(origin = {-10, -78}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Assemblies.JointUSR jointUSR(n1_a = Functions.mirrorY(normalize(rUCAr - rUCAf), side), n_b = Functions.mirrorY(normalize(rLCAr - rLCAf), side), rRod1_ia = Functions.mirrorY(rLBJ - rUBJ, side), rRod2_ib = Functions.mirrorY(rLBJ - rLCApivot, side), phi_guess = 0)  annotation(
+          Placement(transformation(origin = {38, -76}, extent = {{-20, -20}, {20, 20}}, rotation = 180)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation springChassis(r = Functions.mirrorY(rSpringChassis, side))  annotation(
+          Placement(transformation(origin = {-8, -122}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation springArm(r = Functions.mirrorY(rSpringArm - rLCApivot, side))  annotation(
+          Placement(transformation(origin = {82, -128}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel coilover(c = kWheel/motionRatio^2, s_unstretched = sDesign + F0*motionRatio/kWheel, d = dWheel/motionRatio^2)  annotation(
+          Placement(transformation(origin = {34, -120}, extent = {{-10, -10}, {10, 10}})));
+      equation
+  connect(chassisConnect, ucaMount.frame_a) annotation(
+          Line(points = {{-100, 0}, {-14, 0}, {-14, -22}}));
+  connect(ucaMount.frame_b, ucaPivot.frame_a) annotation(
+          Line(points = {{6, -22}, {14, -22}}, color = {95, 95, 95}));
+  connect(ucaPivot.frame_b, uca.frame_a) annotation(
+          Line(points = {{34, -22}, {46, -22}}, color = {95, 95, 95}));
+  connect(chassisConnect, lcaMount.frame_a) annotation(
+          Line(points = {{-100, 0}, {-84, 0}, {-84, -78}, {-20, -78}}));
+  connect(lcaMount.frame_b, jointUSR.frame_b) annotation(
+          Line(points = {{0, -78}, {18, -78}, {18, -76}}, color = {95, 95, 95}));
+  connect(uca.frame_b, jointUSR.frame_a) annotation(
+          Line(points = {{66, -22}, {58, -22}, {58, -76}}, color = {95, 95, 95}));
+  connect(jointUSR.frame_ia, tieRod.frame_b) annotation(
+          Line(points = {{54, -96}, {-36, -96}, {-36, 38}}, color = {95, 95, 95}));
+  connect(chassisConnect, springChassis.frame_a) annotation(
+          Line(points = {{-100, 0}, {-98, 0}, {-98, -122}, {-18, -122}}));
+  connect(jointUSR.frame_ib, springArm.frame_a) annotation(
+          Line(points = {{22, -96}, {22, -104}, {92, -104}, {92, -128}}, color = {95, 95, 95}));
+  connect(springChassis.frame_b, coilover.frame_a) annotation(
+          Line(points = {{2, -122}, {24, -122}, {24, -120}}, color = {95, 95, 95}));
+  connect(coilover.frame_b, springArm.frame_b) annotation(
+          Line(points = {{44, -120}, {72, -120}, {72, -128}}, color = {95, 95, 95}));
+      end DoubleWishboneCorner;
     end Suspension;
 
     partial model BaseSteering
@@ -375,7 +476,7 @@ package AlyssaModel
 
     model RackSteering
       extends AlyssaModel.Components.BaseSteering;
-      parameter Real rackRatio = -0.12 "m/rad" annotation(
+      parameter Real rackRatio = -0.134 "m/rad" annotation(
         Dialog);
       Suspension.Hardpoints.BaseHardpoints hp annotation(
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
@@ -770,14 +871,13 @@ package AlyssaModel
     // vehicle parameters
     // TODO: add vehicle mass, inertias (currently live in VehicleBody)
     parameter SI.Mass vehicleMass = 768;
-    parameter SI.Mass unsprungMass = 100;
-    parameter SI.Mass mUnsprung = unsprungMass/4;
-    parameter SI.Mass mSpring = vehicleMass - unsprungMass "sprung mass";
+    parameter SI.Mass mUnsprungFront = 25 "per corner";
+    parameter SI.Mass mUnsprungRear = 25 "per corner";
+    final parameter SI.Mass mSprung = vehicleMass - 2*(mUnsprungFront + mUnsprungRear);
     // suspension
     parameter SI.TranslationalSpringConstant kz = 250000 "tire vertical stiffness";
     parameter SI.Frequency fRideFront = 4.0;
     parameter SI.Frequency fRideRear = 4.5;
-    final parameter SI.Mass mSprung = vehicleMass - 4*mUnsprung;
     final parameter SI.Force F0Front = mSprung*Modelica.Constants.g_n*(b/wheelbase)/2;
     final parameter SI.Force F0Rear = mSprung*Modelica.Constants.g_n*(a/wheelbase)/2;
     final parameter SI.TranslationalSpringConstant kRideFront = (F0Front/Modelica.Constants.g_n)*(2*Modelica.Constants.pi*fRideFront)^2;
@@ -808,6 +908,11 @@ package AlyssaModel
     parameter SI.Angle deltaMax = 0.35;
     parameter SI.Height rEff0 = 0.33;
     parameter SI.Height cgHeight = 0.30;
+    
+    parameter Real zetaFront = 0.4;
+    parameter Real zetaRear = 0.4;
+    final parameter SI.TranslationalDampingConstant dWheelFront = 2*zetaFront*sqrt(kRideFront*F0Front/Modelica.Constants.g_n);
+    final parameter SI.TranslationalDampingConstant dWheelRear = 2*zetaRear*sqrt(kRideRear*F0Rear/Modelica.Constants.g_n);
   end parameters;
 
   package Vehicles
@@ -938,7 +1043,7 @@ package AlyssaModel
         Placement(transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Blocks.Sources.Constant throttleInput(k = 0.2) annotation(
         Placement(transformation(origin = {-84, 20}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Blocks.Sources.Constant steerInput(k = 0.1) annotation(
+      Modelica.Blocks.Sources.Constant steerInput(k = 0.05) annotation(
         Placement(transformation(origin = {-84, -12}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(throttleInput.y, optimalControl.throttle) annotation(
@@ -1002,6 +1107,78 @@ package AlyssaModel
   connect(toeLinks.tieRodInnerR, cornerR.tieRodInner) annotation(
         Line(points = {{-50, 54}, {-20, 54}, {-20, -44}}, color = {95, 95, 95}));
     end RearToeRig;
+    
+    model SuspensionRig
+    inner Modelica.Mechanics.MultiBody.World world(n = {0, 0, 1})  annotation(
+        Placement(transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Parts.Fixed subframe annotation(
+        Placement(transformation(origin = {0, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+    Modelica.Blocks.Sources.RealExpression delta(y = 0)  annotation(
+        Placement(transformation(origin = {-90, 80}, extent = {{-10, -10}, {10, 10}})));
+    Components.RackSteering steering annotation(
+        Placement(transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}})));
+  Components.Suspension.DoubleWishboneCorner cornerR(side = 1, isFront = true)  annotation(
+        Placement(transformation(origin = {-30, 50}, extent = {{-10, -10}, {10, 10}})));
+  Components.Suspension.DoubleWishboneCorner cornerL(side = -1, isFront = true)  annotation(
+        Placement(transformation(origin = {-30, -50}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Forces.WorldForce loadL(force = {0, 0, -(cornerL.F0 + cornerL.mUnsprung*Modelica.Constants.g_n + 3000*sin(2*Modelica.Constants.pi*0.5*time))}) annotation(
+        Placement(transformation(origin = {-86, -40}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Forces.WorldForce loadR(force = {0, 0, -(cornerR.F0 + cornerR.mUnsprung*Modelica.Constants.g_n + 3000*sin(2*Modelica.Constants.pi*0.5*time))}) annotation(
+        Placement(transformation(origin = {-86, 40}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(steering.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-98, -2}, {0, -2}, {0, 14}}, color = {95, 95, 95}));
+      connect(delta.y, steering.delta) annotation(
+        Line(points = {{-78, 80}, {-96, 80}, {-96, 4}}, color = {0, 0, 127}));
+  connect(cornerL.wheelConnect, loadL.frame_b) annotation(
+        Line(points = {{-22, -50}, {-76, -50}, {-76, -40}}, color = {95, 95, 95}));
+  connect(loadR.frame_b, cornerR.wheelConnect) annotation(
+        Line(points = {{-76, 40}, {-50, 40}, {-50, 50}, {-22, 50}}, color = {95, 95, 95}));
+  connect(steering.tieRodInnerR, cornerR.tieRodInner) annotation(
+        Line(points = {{-90, 4}, {-56, 4}, {-56, 56}, {-40, 56}}, color = {95, 95, 95}));
+  connect(steering.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-92, -6}, {-40, -6}, {-40, -44}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-42, -58}, {0, -58}, {0, 14}}, color = {95, 95, 95}));
+  connect(cornerR.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-42, 42}, {0, 42}, {0, 14}}, color = {95, 95, 95}));
+    end SuspensionRig;
+    
+    model RearSuspensionRig
+    inner Modelica.Mechanics.MultiBody.World world(n = {0, 0, 1})  annotation(
+        Placement(transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Parts.Fixed subframe annotation(
+        Placement(transformation(origin = {0, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+    Modelica.Blocks.Sources.RealExpression delta(y = 0)  annotation(
+        Placement(transformation(origin = {-90, 80}, extent = {{-10, -10}, {10, 10}})));
+    Components.Suspension.DoubleWishboneCorner cornerR(side = 1, isFront = false)  annotation(
+        Placement(transformation(origin = {-30, 50}, extent = {{-10, -10}, {10, 10}})));
+    Components.Suspension.DoubleWishboneCorner cornerL(side = -1, isFront = false)  annotation(
+        Placement(transformation(origin = {-30, -50}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Forces.WorldForce loadL(force = {0, 0, -(cornerL.F0 + cornerL.mUnsprung*Modelica.Constants.g_n + 3000*sin(2*Modelica.Constants.pi*0.5*time))}) annotation(
+        Placement(transformation(origin = {-86, -40}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Forces.WorldForce loadR(force = {0, 0, -(cornerR.F0 + cornerR.mUnsprung*Modelica.Constants.g_n + 3000*sin(2*Modelica.Constants.pi*0.5*time))}) annotation(
+        Placement(transformation(origin = {-86, 40}, extent = {{-10, -10}, {10, 10}})));
+  Components.FixedToeLinks fixedToeLinks annotation(
+        Placement(transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(cornerL.wheelConnect, loadL.frame_b) annotation(
+        Line(points = {{-22, -50}, {-76, -50}, {-76, -40}}, color = {95, 95, 95}));
+      connect(loadR.frame_b, cornerR.wheelConnect) annotation(
+        Line(points = {{-76, 40}, {-50, 40}, {-50, 50}, {-22, 50}}, color = {95, 95, 95}));
+      connect(cornerL.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-42, -58}, {0, -58}, {0, 14}}, color = {95, 95, 95}));
+      connect(cornerR.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-42, 42}, {0, 42}, {0, 14}}, color = {95, 95, 95}));
+  connect(delta.y, fixedToeLinks.delta) annotation(
+        Line(points = {{-78, 80}, {-98, 80}, {-98, 4}, {-96, 4}}, color = {0, 0, 127}));
+  connect(fixedToeLinks.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-98, -2}, {0, -2}, {0, 14}}, color = {95, 95, 95}));
+  connect(fixedToeLinks.tieRodInnerR, cornerR.tieRodInner) annotation(
+        Line(points = {{-90, 4}, {-40, 4}, {-40, 56}}, color = {95, 95, 95}));
+  connect(fixedToeLinks.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-92, -6}, {-40, -6}, {-40, -44}}, color = {95, 95, 95}));
+    end RearSuspensionRig;
   end Experiments;
 
   package Controllers
