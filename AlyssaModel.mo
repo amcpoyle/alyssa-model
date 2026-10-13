@@ -1043,13 +1043,13 @@ package AlyssaModel
         Placement(transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Blocks.Sources.Constant throttleInput(k = 0.2) annotation(
         Placement(transformation(origin = {-84, 20}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Blocks.Sources.Constant steerInput(k = 0.075) annotation(
-        Placement(transformation(origin = {-84, -12}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.RealExpression steerInput(y = 0.03*exp(-((time - 1)/0.2)^2))  annotation(
+        Placement(transformation(origin = {-84, -22}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(throttleInput.y, optimalControl.throttle) annotation(
         Line(points = {{-72, 20}, {-8, 20}, {-8, 8}}, color = {0, 0, 127}));
-      connect(steerInput.y, optimalControl.steer) annotation(
-        Line(points = {{-72, -12}, {-8, -12}, {-8, 6}}, color = {0, 0, 127}));
+  connect(steerInput.y, optimalControl.steer) annotation(
+        Line(points = {{-72, -22}, {-8, -22}, {-8, 6}}, color = {0, 0, 127}));
     end FlatRoadSim;
 
     model SteeringRig
