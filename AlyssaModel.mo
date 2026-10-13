@@ -84,7 +84,6 @@ package AlyssaModel
     end VehicleAero;
 
     model FrontSuspension
-      parameter Modelica.Units.SI.Position dzHub = 0 "hub height relative to subframe, +z = down";
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a subFrameFront annotation(
         Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}})));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bL annotation(
@@ -95,27 +94,29 @@ package AlyssaModel
         Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-72, 58}, extent = {{-20, -20}, {20, 20}})));
       parameters vehicleParams annotation(
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Parts.FixedTranslation armL(r = {0, -vehicleParams.tf/2, dzHub}) annotation(
-        Placement(transformation(origin = {74, -24}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-      Modelica.Mechanics.MultiBody.Parts.FixedTranslation armR(r = {0, vehicleParams.tf/2, dzHub}) annotation(
-        Placement(transformation(origin = {74, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-      Steering steering annotation(
-        Placement(transformation(origin = {-50, 30}, extent = {{-10, -10}, {10, 10}})));
+  RackSteering steering annotation(
+        Placement(transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.RigidCorner cornerR(side = 1, isFront = true)  annotation(
+        Placement(transformation(origin = {-10, 70}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.RigidCorner cornerL(side = -1, isFront = true)  annotation(
+        Placement(transformation(origin = {-10, -70}, extent = {{-10, -10}, {10, 10}})));
     equation
-      connect(subFrameFront, armL.frame_a) annotation(
-        Line(points = {{100, 0}, {74, 0}, {74, -14}}));
-      connect(subFrameFront, armR.frame_a) annotation(
-        Line(points = {{100, 0}, {74, 0}, {74, 24}}));
-      connect(steering.frame_bR, frame_bR) annotation(
-        Line(points = {{-46, 38}, {-46, 74}, {0, 74}, {0, 100}}, color = {95, 95, 95}));
-      connect(steering.frame_bL, frame_bL) annotation(
-        Line(points = {{-45, 23}, {-24, 23}, {-24, -32.5}, {0, -32.5}, {0, -100}}, color = {95, 95, 95}));
-      connect(steering.frame_aR, armR.frame_b) annotation(
-        Line(points = {{-41, 36}, {21.5, 36}, {21.5, 44}, {74, 44}}, color = {95, 95, 95}));
-      connect(steering.frame_aL, armL.frame_b) annotation(
-        Line(points = {{-40, 24}, {17, 24}, {17, -34}, {74, -34}}, color = {95, 95, 95}));
-      connect(delta, steering.delta) annotation(
-        Line(points = {{-100, 70}, {-54, 70}, {-54, 30}}, color = {0, 0, 127}));
+  connect(steering.chassisConnect, subFrameFront) annotation(
+        Line(points = {{-58, 8}, {100, 8}, {100, 0}}, color = {95, 95, 95}));
+  connect(cornerR.chassisConnect, subFrameFront) annotation(
+        Line(points = {{-22, 62}, {100, 62}, {100, 0}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subFrameFront) annotation(
+        Line(points = {{-22, -78}, {100, -78}, {100, 0}}, color = {95, 95, 95}));
+  connect(delta, steering.delta) annotation(
+        Line(points = {{-100, 70}, {-56, 70}, {-56, 14}}, color = {0, 0, 127}));
+  connect(cornerR.tieRodInner, steering.tieRodInnerR) annotation(
+        Line(points = {{-20, 76}, {-50, 76}, {-50, 14}}, color = {95, 95, 95}));
+  connect(steering.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-52, 4}, {-20, 4}, {-20, -64}}, color = {95, 95, 95}));
+  connect(cornerR.wheelConnect, frame_bR) annotation(
+        Line(points = {{-2, 70}, {0, 70}, {0, 100}}, color = {95, 95, 95}));
+  connect(cornerL.wheelConnect, frame_bL) annotation(
+        Line(points = {{-2, -70}, {0, -70}, {0, -100}}, color = {95, 95, 95}));
     end FrontSuspension;
 
     model SteeringComputation
@@ -136,7 +137,6 @@ package AlyssaModel
     end SteeringComputation;
 
     model RearSuspension
-      parameter Modelica.Units.SI.Position dzHub = 0 "hub height relative to subframe";
       parameters vehicleParams annotation(
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a subFrameRear annotation(
@@ -145,19 +145,31 @@ package AlyssaModel
         Placement(transformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_bR annotation(
         Placement(transformation(origin = {0, 100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {0, 100}, extent = {{-16, -16}, {16, 16}}, rotation = -90)));
-      Modelica.Mechanics.MultiBody.Parts.FixedTranslation armL(r = {0, -vehicleParams.tr/2, dzHub}) annotation(
-        Placement(transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-      Modelica.Mechanics.MultiBody.Parts.FixedTranslation armR(r = {0, vehicleParams.tr/2, dzHub}) annotation(
-        Placement(transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  FixedToeLinks toeLinks annotation(
+        Placement(transformation(origin = {-50, 2}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.Constant deltaValue(k = 0)  annotation(
+        Placement(transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.RigidCorner cornerR(side = 1, isFront = false)  annotation(
+        Placement(transformation(origin = {-10, 50}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.RigidCorner cornerL(side = -1, isFront = false)  annotation(
+        Placement(transformation(origin = {-10, -50}, extent = {{-10, -10}, {10, 10}})));
     equation
-      connect(subFrameRear, armR.frame_a) annotation(
-        Line(points = {{-100, 0}, {0, 0}, {0, 40}}));
-      connect(subFrameRear, armL.frame_a) annotation(
-        Line(points = {{-100, 0}, {0, 0}, {0, -40}}));
-      connect(armL.frame_b, frame_bL) annotation(
-        Line(points = {{0, -60}, {0, -100}}, color = {95, 95, 95}));
-      connect(armR.frame_b, frame_bR) annotation(
-        Line(points = {{0, 60}, {0, 100}}, color = {95, 95, 95}));
+  connect(subFrameRear, toeLinks.chassisConnect) annotation(
+        Line(points = {{-100, 0}, {-58, 0}}));
+  connect(deltaValue.y, toeLinks.delta) annotation(
+        Line(points = {{-78, 70}, {-56, 70}, {-56, 6}}, color = {0, 0, 127}));
+  connect(cornerR.chassisConnect, subFrameRear) annotation(
+        Line(points = {{-22, 42}, {-100, 42}, {-100, 0}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subFrameRear) annotation(
+        Line(points = {{-22, -58}, {-100, -58}, {-100, 0}}, color = {95, 95, 95}));
+  connect(toeLinks.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-52, -4}, {-20, -4}, {-20, -44}}, color = {95, 95, 95}));
+  connect(cornerR.tieRodInner, toeLinks.tieRodInnerR) annotation(
+        Line(points = {{-20, 56}, {-50, 56}, {-50, 6}}, color = {95, 95, 95}));
+  connect(cornerR.wheelConnect, frame_bR) annotation(
+        Line(points = {{-2, 50}, {0, 50}, {0, 100}}, color = {95, 95, 95}));
+  connect(cornerL.wheelConnect, frame_bL) annotation(
+        Line(points = {{-2, -50}, {0, -50}, {0, -100}}, color = {95, 95, 95}));
     end RearSuspension;
 
     model Steering
