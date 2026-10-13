@@ -206,6 +206,7 @@ package AlyssaModel
     package Suspension
       partial model BaseCorner
         parameter Integer side "+1 = right, -1 = left; mirrors toe, camber, hardpoints";
+        parameter Boolean isFront "true = use front_* hardpoints, false = rear_*";
         Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisConnect annotation(
           Placement(transformation(origin = {-100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-120, -74}, extent = {{-16, -16}, {16, 16}})));
         Modelica.Mechanics.MultiBody.Interfaces.Frame_b wheelConnect annotation(
@@ -265,6 +266,86 @@ package AlyssaModel
         
         end BaseHardpoints;
       end Hardpoints;
+
+      partial model PartialUprightCorner
+        extends AlyssaModel.Components.Suspension.BaseCorner;
+        
+        import Modelica.Units.SI;
+        
+        parameter SI.Position rKingpinTop[3] = {-0.02, 0.85, -0.20} "right upper ball joint position";
+        parameter Real nKingpin[3] = {0.110, 0.248, 0.963} "kingpin direction, right";
+        parameter SI.Position rWC[3] = {0, 1.0, 0} "wheel center, right side";
+        parameter SI.Position rTieOuter[3] = {-0.12, 0.92, 0.10} "tie rod ends, right";
+        parameter SI.Position rTieInner[3] = {-0.12, 0.40, 0.10} "tie rod ends, right";
+        parameter SI.Angle staticCamber = 0 "negative = top in";
+        parameter SI.Angle staticToe = 0 "positive = toe in";
+        parameter SI.Mass mUnsprung = 0 "upright mass";
+  Modelica.Mechanics.MultiBody.Joints.Assemblies.JointSSR tieRod(rod1Length = Modelica.Math.Vectors.norm(rTieOuter - rTieInner), rod1Mass = 0, n_b = Functions.mirrorY(nKingpin, side), rRod2_ib = Functions.mirrorY(rTieOuter - rKingpinTop, side), phi_guess = 0)  annotation(
+          Placement(transformation(origin = {-56, 38}, extent = {{-20, -20}, {20, 20}})));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation spindle(r = Functions.mirrorY(rWC - rKingpinTop, side))  annotation(
+          Placement(transformation(origin = {-22, 78}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.FixedRotation staticAlign(rotationType = Modelica.Mechanics.MultiBody.Types.RotationTypes.PlanarRotationSequence, sequence = {3, 1, 2}, angles = {-side*Modelica.Units.Conversions.to_deg(staticToe), side*Modelica.Units.Conversions.to_deg(staticCamber), 0})  annotation(
+          Placement(transformation(origin = {12, 78}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.Body upright(r_CM = {0, 0, 0}, m = mUnsprung)  annotation(
+          Placement(transformation(origin = {10, 42}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Sensors.RelativeAngles wheelAngles(sequence = {3, 1, 2})  annotation(
+          Placement(transformation(origin = {-50, -12}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Sensors.RelativePosition wheelPosition annotation(
+          Placement(transformation(origin = {-48, -44}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput travel(unit="m") annotation(
+          Placement(transformation(origin = {100, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {74, 78}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput camber(unit="rad") annotation(
+          Placement(transformation(origin = {100, 40}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {24, 32}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Interfaces.RealOutput toe(unit="rad") annotation(
+          Placement(transformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {68, 22}, extent = {{-10, -10}, {10, 10}})));
+      equation
+  connect(tieRodInner, tieRod.frame_a) annotation(
+          Line(points = {{-100, 40}, {-76, 40}, {-76, 38}}));
+  connect(tieRod.frame_ib, spindle.frame_a) annotation(
+          Line(points = {{-40, 58}, {-32, 58}, {-32, 78}}, color = {95, 95, 95}));
+  connect(spindle.frame_b, staticAlign.frame_a) annotation(
+          Line(points = {{-12, 78}, {2, 78}}, color = {95, 95, 95}));
+  connect(staticAlign.frame_b, wheelConnect) annotation(
+          Line(points = {{22, 78}, {54, 78}, {54, 0}, {100, 0}}, color = {95, 95, 95}));
+  connect(spindle.frame_b, upright.frame_a) annotation(
+          Line(points = {{-12, 78}, {-12, 42}, {0, 42}}, color = {95, 95, 95}));
+  connect(chassisConnect, wheelAngles.frame_a) annotation(
+          Line(points = {{-100, 0}, {-60, 0}, {-60, -12}}));
+  connect(wheelConnect, wheelAngles.frame_b) annotation(
+          Line(points = {{100, 0}, {-40, 0}, {-40, -12}}));
+  connect(chassisConnect, wheelPosition.frame_a) annotation(
+          Line(points = {{-100, 0}, {-74, 0}, {-74, -44}, {-58, -44}}));
+  connect(wheelPosition.frame_b, wheelConnect) annotation(
+          Line(points = {{-38, -44}, {100, -44}, {100, 0}}, color = {95, 95, 95}));
+      
+      travel = -(wheelPosition.r_rel[3] - rWC[3]);
+      
+       // positive = bump
+      toe = -side*wheelAngles.angles[1]; // positive = toe-in (including steer)
+      camber = side*wheelAngles.angles[2];
+      end PartialUprightCorner;
+
+      model RigidCorner
+        extends AlyssaModel.Components.Suspension.PartialUprightCorner(
+        final rKingpinTop = if isFront then hp.front_rUBJ else hp.rear_rUBJ,
+        final nKingpin = Modelica.Math.Vectors.normalize(if isFront then hp.front_rLBJ - hp.front_rUBJ else hp.rear_rLBJ - hp.rear_rUBJ),
+        final rWC = if isFront then hp.front_rWC else hp.rear_rWC,
+        final rTieOuter = if isFront then hp.front_rTieOuter else hp.rear_rTieOuter,
+        final rTieInner = if isFront then hp.front_rTieInner else hp.rear_rTieInner,
+        final staticCamber = if isFront then hp.front_staticCamber else hp.rear_staticCamber,
+        final staticToe = if isFront then hp.front_staticToe else hp.rear_staticToe,
+        final mUnsprung=0
+        );
+  Hardpoints.BaseHardpoints hp annotation(
+          Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation carrier(r = Functions.mirrorY(rKingpinTop, side))  annotation(
+          Placement(transformation(origin = {-46, 16}, extent = {{-10, -10}, {10, 10}})));
+      equation
+  connect(chassisConnect, carrier.frame_a) annotation(
+          Line(points = {{-100, 0}, {-56, 0}, {-56, 16}}));
+  connect(carrier.frame_b, tieRod.frame_b) annotation(
+          Line(points = {{-36, 16}, {-36, 38}}, color = {95, 95, 95}));
+      end RigidCorner;
     end Suspension;
 
     partial model BaseSteering
@@ -282,7 +363,7 @@ package AlyssaModel
 
     model RackSteering
       extends AlyssaModel.Components.BaseSteering;
-      parameter Real rackRatio = 0.12 "m/rad" annotation(
+      parameter Real rackRatio = -0.12 "m/rad" annotation(
         Dialog);
       Suspension.Hardpoints.BaseHardpoints hp annotation(
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
@@ -645,6 +726,15 @@ package AlyssaModel
         smoothOrder = 1,
         Inline = true);
     end smoothSqrt;
+
+    function mirrorY
+      input Real r[3];
+      input Integer side "+1 right, -1 left";
+      output Real y[3];
+    algorithm
+      y := {r[1], side*r[2], r[3]};
+      annotation(Inline = true);
+    end mirrorY;
   end Functions;
 
   record parameters
@@ -844,6 +934,62 @@ package AlyssaModel
       connect(steerInput.y, optimalControl.steer) annotation(
         Line(points = {{-72, -12}, {-8, -12}, {-8, 6}}, color = {0, 0, 127}));
     end FlatRoadSim;
+
+    model SteeringRig
+  inner Modelica.Mechanics.MultiBody.World world(n = {0, 0, 1})  annotation(
+        Placement(transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.Fixed subframe annotation(
+        Placement(transformation(origin = {0, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  Modelica.Blocks.Sources.RealExpression delta(y = 0.35*sin(2*Modelica.Constants.pi*0.5*time))  annotation(
+        Placement(transformation(origin = {-90, 80}, extent = {{-10, -10}, {10, 10}})));
+  Components.RackSteering steering annotation(
+        Placement(transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}})));
+  Components.Suspension.RigidCorner cornerL(side = -1, isFront = true)  annotation(
+        Placement(transformation(origin = {-50, 70}, extent = {{-10, -10}, {10, 10}})));
+  Components.Suspension.RigidCorner cornerR(side = 1, isFront = true)  annotation(
+        Placement(transformation(origin = {-50, -50}, extent = {{-10, -10}, {10, 10}})));
+    equation
+  connect(steering.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-98, -2}, {0, -2}, {0, 14}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-62, 62}, {0, 62}, {0, 14}}, color = {95, 95, 95}));
+  connect(cornerR.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-62, -58}, {0, -58}, {0, 14}}, color = {95, 95, 95}));
+  connect(steering.tieRodInnerR, cornerR.tieRodInner) annotation(
+        Line(points = {{-90, 4}, {-60, 4}, {-60, -44}}, color = {95, 95, 95}));
+  connect(steering.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-92, -6}, {-60, -6}, {-60, 76}}, color = {95, 95, 95}));
+  connect(delta.y, steering.delta) annotation(
+        Line(points = {{-78, 80}, {-96, 80}, {-96, 4}}, color = {0, 0, 127}));
+    end SteeringRig;
+
+    model RearToeRig
+  inner Modelica.Mechanics.MultiBody.World world annotation(
+        Placement(transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.Fixed subframe annotation(
+        Placement(transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+  Components.FixedToeLinks toeLinks annotation(
+        Placement(transformation(origin = {-50, 50}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.Constant deltaValue(k = 0)  annotation(
+        Placement(transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}})));
+  Components.Suspension.RigidCorner cornerL(side = -1, isFront = false)  annotation(
+        Placement(transformation(origin = {-10, 70}, extent = {{-10, -10}, {10, 10}})));
+  Components.Suspension.RigidCorner cornerR(side = 1, isFront = false)  annotation(
+        Placement(transformation(origin = {-10, -50}, extent = {{-10, -10}, {10, 10}})));
+    equation
+  connect(deltaValue.y, toeLinks.delta) annotation(
+        Line(points = {{-78, 70}, {-56, 70}, {-56, 54}}, color = {0, 0, 127}));
+  connect(toeLinks.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-58, 48}, {-8, 48}, {-8, 0}}, color = {95, 95, 95}));
+  connect(cornerR.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-22, -58}, {-8, -58}, {-8, 0}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subframe.frame_b) annotation(
+        Line(points = {{-22, 62}, {-8, 62}, {-8, 0}}, color = {95, 95, 95}));
+  connect(toeLinks.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-52, 44}, {-20, 44}, {-20, 76}}, color = {95, 95, 95}));
+  connect(toeLinks.tieRodInnerR, cornerR.tieRodInner) annotation(
+        Line(points = {{-50, 54}, {-20, 54}, {-20, -44}}, color = {95, 95, 95}));
+    end RearToeRig;
   end Experiments;
 
   package Controllers
