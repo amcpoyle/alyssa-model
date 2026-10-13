@@ -661,7 +661,7 @@ package AlyssaModel
         Dialog);
       parameter SI.Radius rEff = 0.33 "Effective rolling radius" annotation(
         Dialog);
-      parameter SI.RotationalDampingConstant dSpin = 0.5 "bearing damping" annotation(
+      parameter SI.RotationalDampingConstant dSpin = 0.01 "bearing damping" annotation(
         Dialog);
       parameter Real crr = 0.015 "rolling resistance coeff" annotation(
         Dialog);
@@ -905,6 +905,7 @@ package AlyssaModel
     parameter SI.Torque maxBrakeTorque = 10000 "total brake torque, all 4 wheels";
     parameter Real brakeBias = 0.62 "fraction of brake torque to front axle";
     parameter SI.AngularVelocity maxSteerRate = 5.0 "rad/s";
+    parameter Real maxPedalRate = 10.0 "max drive/brake pedal rate [1/s]";
     parameter SI.Angle deltaMax = 0.35;
     parameter SI.Height rEff0 = 0.33;
     parameter SI.Height cgHeight = 0.30;
@@ -994,21 +995,17 @@ package AlyssaModel
   end Vehicles;
 
   package Experiments
-    model OptimalControl
+      partial model OptimalControlBase "vehicle on the rig with the steer input; the controller and pedal inputs are added by the extending models"
       Vehicles.AlyssaVehicle vehicle annotation(
         Placement(transformation(origin = {-49.5, -1}, extent = {{-31.5, -21}, {31.5, 21}})));
       Modelica.Blocks.Sources.Constant mu(k = 1.0) annotation(
         Placement(transformation(origin = {-130, 10}, extent = {{-10, -10}, {10, 10}})));
-      Controllers.RigController rigController annotation(
-        Placement(transformation(origin = {39, 59}, extent = {{-17, -17}, {17, 17}})));
       inner Roads.FlatRoad road annotation(
         Placement(transformation(origin = {-52, -90}, extent = {{-10, -10}, {10, 10}})));
       inner Modelica.Mechanics.MultiBody.World world(n = {0, 0, 1}) annotation(
         Placement(transformation(origin = {-90, -90}, extent = {{-10, -10}, {10, 10}})));
       Rigs.Rig rig annotation(
         Placement(transformation(origin = {40, 0}, extent = {{-20, -20}, {20, 20}})));
-      Modelica.Blocks.Interfaces.RealInput throttle annotation(
-        Placement(transformation(origin = {-100, 80}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 80}, extent = {{-12, -12}, {12, 12}})));
       Modelica.Blocks.Interfaces.RealInput steer annotation(
         Placement(transformation(origin = {-100, 60}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 60}, extent = {{-12, -12}, {12, 12}})));
     equation
@@ -1016,8 +1013,6 @@ package AlyssaModel
         Line(points = {{-80, -90}, {-80, -39}, {16, -39}, {16, 0}}, color = {95, 95, 95}));
       connect(rig.vehicleFrame, vehicle.chassisFrame) annotation(
         Line(points = {{58, 2}, {80, 2}, {80, -13}, {-56, -13}, {-56, -28}}, color = {95, 95, 95}));
-      connect(rigController.tau, rig.tau) annotation(
-        Line(points = {{56, 50}, {34, 50}, {34, 12}}, color = {0, 0, 127}, thickness = 0.5));
       connect(vehicle.hubFR, rig.hubFR) annotation(
         Line(points = {{-66, 20}, {26, 20}}, color = {135, 135, 135}));
       connect(vehicle.hubRR, rig.hubRR) annotation(
@@ -1026,17 +1021,74 @@ package AlyssaModel
         Line(points = {{-34, -22}, {56, -22}, {56, -20}}, color = {135, 135, 135}));
       connect(rig.hubFL, vehicle.hubFL) annotation(
         Line(points = {{26, -20}, {-20, -20}, {-20, -22}, {-66, -22}}, color = {135, 135, 135}));
+  connect(vehicle.mu, mu.y) annotation(
+        Line(points = {{-80, 10}, {-119, 10}}, color = {0, 0, 127}));
+    end OptimalControlBase;
+
+      model OptimalControl "single throttle input (-1 full brake .. 1 full throttle), split by ThrottleSmoothing"
+      extends OptimalControlBase;
+      Controllers.RigController rigController annotation(
+        Placement(transformation(origin = {39, 59}, extent = {{-17, -17}, {17, 17}})));
+  Modelica.Blocks.Interfaces.RealInput throttle annotation(
+        Placement(transformation(origin = {-100, 80}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 80}, extent = {{-12, -12}, {12, 12}})));
+    equation
+      connect(rigController.tau, rig.tau) annotation(
+        Line(points = {{56, 50}, {34, 50}, {34, 12}}, color = {0, 0, 127}, thickness = 0.5));
       connect(throttle, rigController.throttle) annotation(
         Line(points = {{-100, 80}, {26, 80}, {26, 70}}, color = {0, 0, 127}));
       connect(steer, rigController.steer) annotation(
         Line(points = {{-100, 60}, {26, 60}, {26, 64}}, color = {0, 0, 127}));
       connect(vehicle.w, rigController.w) annotation(
         Line(points = {{-20, -6}, {26, -6}, {26, 76}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(vehicle.mu, mu.y) annotation(
-        Line(points = {{-80, 10}, {-119, 10}}, color = {0, 0, 127}));
       connect(vehicle.delta, rigController.delta) annotation(
         Line(points = {{-80, 14}, {52, 14}, {52, 56}}, color = {0, 0, 127}));
     end OptimalControl;
+
+      model OptimalControlDriveBrake "separate drive and brake inputs (each 0 .. 1); wheel torque is linear in each"
+      extends OptimalControlBase;
+      Controllers.RigControllerDriveBrake rigController annotation(
+        Placement(transformation(origin = {39, 59}, extent = {{-17, -17}, {17, 17}})));
+  Modelica.Blocks.Interfaces.RealInput drive "0 .. 1, fraction of available drive torque" annotation(
+        Placement(transformation(origin = {-100, 90}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 90}, extent = {{-12, -12}, {12, 12}})));
+  Modelica.Blocks.Interfaces.RealInput brake "0 .. 1, fraction of maximum brake torque" annotation(
+        Placement(transformation(origin = {-100, 75}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 75}, extent = {{-12, -12}, {12, 12}})));
+    equation
+      connect(rigController.tau, rig.tau) annotation(
+        Line(points = {{56, 50}, {34, 50}, {34, 12}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(drive, rigController.drive) annotation(
+        Line(points = {{-100, 90}, {26, 90}, {26, 74}}, color = {0, 0, 127}));
+  connect(brake, rigController.brake) annotation(
+        Line(points = {{-100, 75}, {20, 75}, {20, 69}}, color = {0, 0, 127}));
+  connect(steer, rigController.steer) annotation(
+        Line(points = {{-100, 60}, {26, 60}, {26, 64}}, color = {0, 0, 127}));
+  connect(vehicle.w, rigController.w) annotation(
+        Line(points = {{-20, -6}, {26, -6}, {26, 76}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(vehicle.delta, rigController.delta) annotation(
+        Line(points = {{-80, 14}, {52, 14}, {52, 56}}, color = {0, 0, 127}));
+    end OptimalControlDriveBrake;
+
+      model OptimalControlPedalRate "drive and brake pedal RATE inputs (-1 .. 1); the pedal positions are model states, like the steer angle"
+      extends OptimalControlBase;
+      Controllers.RigControllerPedalRate rigController annotation(
+        Placement(transformation(origin = {39, 59}, extent = {{-17, -17}, {17, 17}})));
+  Modelica.Blocks.Interfaces.RealInput driveRate "-1 .. 1, drive pedal rate as a fraction of maxPedalRate" annotation(
+        Placement(transformation(origin = {-100, 90}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 90}, extent = {{-12, -12}, {12, 12}})));
+  Modelica.Blocks.Interfaces.RealInput brakeRate "-1 .. 1, brake pedal rate as a fraction of maxPedalRate" annotation(
+        Placement(transformation(origin = {-100, 75}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-100, 75}, extent = {{-12, -12}, {12, 12}})));
+    equation
+      connect(rigController.tau, rig.tau) annotation(
+        Line(points = {{56, 50}, {34, 50}, {34, 12}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(driveRate, rigController.driveRate) annotation(
+        Line(points = {{-100, 90}, {26, 90}, {26, 74}}, color = {0, 0, 127}));
+  connect(brakeRate, rigController.brakeRate) annotation(
+        Line(points = {{-100, 75}, {20, 75}, {20, 69}}, color = {0, 0, 127}));
+  connect(steer, rigController.steer) annotation(
+        Line(points = {{-100, 60}, {26, 60}, {26, 64}}, color = {0, 0, 127}));
+  connect(vehicle.w, rigController.w) annotation(
+        Line(points = {{-20, -6}, {26, -6}, {26, 76}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(vehicle.delta, rigController.delta) annotation(
+        Line(points = {{-80, 14}, {52, 14}, {52, 56}}, color = {0, 0, 127}));
+    end OptimalControlPedalRate;
 
     model FlatRoadSim
       OptimalControl optimalControl annotation(
@@ -1051,6 +1103,48 @@ package AlyssaModel
   connect(steerInput.y, optimalControl.steer) annotation(
         Line(points = {{-72, -22}, {-8, -22}, {-8, 6}}, color = {0, 0, 127}));
     end FlatRoadSim;
+
+    model OptimalControlFMU "OptimalControlPedalRate plus telemetry outputs, exported as an FMU for lap time optimization (see fmu/build_fmu.mos)"
+      extends OptimalControlPedalRate;
+      import Modelica.Units.SI;
+      Modelica.Blocks.Interfaces.RealOutput vxBody(unit = "m/s") "chassis longitudinal velocity, body frame" annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput vyBody(unit = "m/s") "chassis lateral velocity, body frame (SAE, +right)" annotation(
+        Placement(transformation(origin = {110, 70}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput axBody(unit = "m/s2") "chassis longitudinal acceleration, body frame" annotation(
+        Placement(transformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput ayBody(unit = "m/s2") "chassis lateral acceleration, body frame (SAE, +right)" annotation(
+        Placement(transformation(origin = {110, 30}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput fx[4](each unit = "N") "tire longitudinal forces, FL FR RL RR" annotation(
+        Placement(transformation(origin = {110, 10}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput fy[4](each unit = "N") "tire lateral forces, FL FR RL RR" annotation(
+        Placement(transformation(origin = {110, -10}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput fz[4](each unit = "N") "tire normal loads, FL FR RL RR" annotation(
+        Placement(transformation(origin = {110, -30}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput delta(unit = "rad") "steer command (rack travel / rackRatio); about the road wheel angle near centre, see deltaWheel" annotation(
+        Placement(transformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput deltaWheel[2](each unit = "rad") "front road wheel steer angles from the linkage, FL FR (+ = right, static toe removed)" annotation(
+        Placement(transformation(origin = {110, -90}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput pedal "single-pedal equivalent drive - brake (-1 full brake .. 1 full throttle), comparable with driver data" annotation(
+        Placement(transformation(origin = {110, -70}, extent = {{-10, -10}, {10, 10}})));
+    protected
+      SI.Velocity vBody[3];
+      SI.Acceleration aBody[3];
+    equation
+      vBody = Modelica.Mechanics.MultiBody.Frames.resolve2(vehicle.vehicleBody.body.frame_a.R, vehicle.vehicleBody.body.v_0);
+      aBody = Modelica.Mechanics.MultiBody.Frames.resolve2(vehicle.vehicleBody.body.frame_a.R, vehicle.vehicleBody.body.a_0);
+      vxBody = vBody[1];
+      vyBody = vBody[2];
+      axBody = aBody[1];
+      ayBody = aBody[2];
+      fx = {vehicle.wheelFL.fx, vehicle.wheelFR.fx, vehicle.wheelRL.fx, vehicle.wheelRR.fx};
+      fy = {vehicle.wheelFL.fy, vehicle.wheelFR.fy, vehicle.wheelRL.fy, vehicle.wheelRR.fy};
+      fz = {vehicle.wheelFL.fz, vehicle.wheelFR.fz, vehicle.wheelRL.fz, vehicle.wheelRR.fz};
+      delta = rigController.delta;
+// toe is + = toe-in, so a right steer is +toe on the left wheel and -toe on the right
+      deltaWheel = {vehicle.frontSuspension.cornerL.toe - vehicle.frontSuspension.cornerL.staticToe, -(vehicle.frontSuspension.cornerR.toe - vehicle.frontSuspension.cornerR.staticToe)};
+      pedal = rigController.pedalSmoothing.drive - rigController.pedalSmoothing.brake;
+    end OptimalControlFMU;
 
     model SteeringRig
   inner Modelica.Mechanics.MultiBody.World world(n = {0, 0, 1})  annotation(
@@ -1212,30 +1306,125 @@ package AlyssaModel
         Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Bitmap(extent = {{-90, -90}, {90, 90}}, fileName = "modelica://AlyssaModel/Resources/Images/pcb icon.png"), Text(extent = {{-100, -135}, {100, -105}}, textString = "%name")}));
     end RigController;
 
+    model RigControllerDriveBrake "RigController with separate drive and brake inputs instead of one throttle"
+      Modelica.Blocks.Interfaces.RealInput steer annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 25}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput drive "0 .. 1" annotation(
+        Placement(transformation(origin = {-100, 96}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 75}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput brake "0 .. 1" annotation(
+        Placement(transformation(origin = {-100, 84}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 50}, extent = {{-20, -20}, {20, 20}})));
+      DriveBrakeTorque driveBrakeTorque annotation(
+        Placement(transformation(origin = {-30, 70}, extent = {{-10, -10}, {10, 10}})));
+      SteerSmoothing steerSmoothing annotation(
+        Placement(transformation(origin = {-30, 30}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealInput w[4](each unit = "rad/s") "wheel speeds" annotation(
+        Placement(transformation(origin = {-100, 50}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 95}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealOutput tau[4](each unit = "N.m") "torque demand" annotation(
+        Placement(transformation(origin = {100, 8}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput delta(unit = "rad") annotation(
+        Placement(transformation(origin = {100, -12}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {82, -22}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(steer, steerSmoothing.uSteer) annotation(
+        Line(points = {{-100, 70}, {-36, 70}, {-36, 34}}, color = {0, 0, 127}));
+      connect(drive, driveBrakeTorque.uDrive) annotation(
+        Line(points = {{-100, 96}, {-22, 96}, {-22, 78}}, color = {0, 0, 127}));
+      connect(brake, driveBrakeTorque.uBrake) annotation(
+        Line(points = {{-100, 84}, {-26, 84}, {-26, 76}}, color = {0, 0, 127}));
+      connect(w, driveBrakeTorque.w) annotation(
+        Line(points = {{-100, 50}, {-22, 50}, {-22, 72}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(steerSmoothing.delta, delta) annotation(
+        Line(points = {{-22, 30}, {39, 30}, {39, -12}, {100, -12}}, color = {0, 0, 127}));
+      connect(driveBrakeTorque.tau, tau) annotation(
+        Line(points = {{-24, 68}, {100, 68}, {100, 8}}, color = {0, 0, 127}, thickness = 0.5));
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Bitmap(extent = {{-90, -90}, {90, 90}}, fileName = "modelica://AlyssaModel/Resources/Images/pcb icon.png"), Text(extent = {{-100, -135}, {100, -105}}, textString = "%name")}));
+    end RigControllerDriveBrake;
+
+    model RigControllerPedalRate "RigController with drive and brake pedal RATE inputs; pedal positions are states (PedalSmoothing)"
+      Modelica.Blocks.Interfaces.RealInput steer annotation(
+        Placement(transformation(origin = {-100, 70}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 25}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput driveRate "-1 .. 1" annotation(
+        Placement(transformation(origin = {-100, 96}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 75}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput brakeRate "-1 .. 1" annotation(
+        Placement(transformation(origin = {-100, 84}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 50}, extent = {{-20, -20}, {20, 20}})));
+      PedalSmoothing pedalSmoothing annotation(
+        Placement(transformation(origin = {-60, 90}, extent = {{-10, -10}, {10, 10}})));
+      DriveBrakeTorque driveBrakeTorque annotation(
+        Placement(transformation(origin = {-30, 70}, extent = {{-10, -10}, {10, 10}})));
+      SteerSmoothing steerSmoothing annotation(
+        Placement(transformation(origin = {-30, 30}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealInput w[4](each unit = "rad/s") "wheel speeds" annotation(
+        Placement(transformation(origin = {-100, 50}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 95}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealOutput tau[4](each unit = "N.m") "torque demand" annotation(
+        Placement(transformation(origin = {100, 8}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, -50}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput delta(unit = "rad") annotation(
+        Placement(transformation(origin = {100, -12}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {82, -22}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(steer, steerSmoothing.uSteer) annotation(
+        Line(points = {{-100, 70}, {-36, 70}, {-36, 34}}, color = {0, 0, 127}));
+      connect(driveRate, pedalSmoothing.uDriveRate) annotation(
+        Line(points = {{-100, 96}, {-70, 96}}, color = {0, 0, 127}));
+      connect(brakeRate, pedalSmoothing.uBrakeRate) annotation(
+        Line(points = {{-100, 84}, {-70, 84}}, color = {0, 0, 127}));
+      connect(pedalSmoothing.drive, driveBrakeTorque.uDrive) annotation(
+        Line(points = {{-50, 94}, {-38, 94}, {-38, 78}}, color = {0, 0, 127}));
+      connect(pedalSmoothing.brake, driveBrakeTorque.uBrake) annotation(
+        Line(points = {{-50, 86}, {-38, 86}, {-38, 76}}, color = {0, 0, 127}));
+      connect(w, driveBrakeTorque.w) annotation(
+        Line(points = {{-100, 50}, {-22, 50}, {-22, 72}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(steerSmoothing.delta, delta) annotation(
+        Line(points = {{-22, 30}, {39, 30}, {39, -12}, {100, -12}}, color = {0, 0, 127}));
+      connect(driveBrakeTorque.tau, tau) annotation(
+        Line(points = {{-24, 68}, {100, 68}, {100, 8}}, color = {0, 0, 127}, thickness = 0.5));
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}, lineColor = {0, 0, 0}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Bitmap(extent = {{-90, -90}, {90, 90}}, fileName = "modelica://AlyssaModel/Resources/Images/pcb icon.png"), Text(extent = {{-100, -135}, {100, -105}}, textString = "%name")}));
+    end RigControllerPedalRate;
+
     model ThrottleSmoothing
       import Modelica.Units.SI;
-      parameter Real uEps = 1e-3;
+      parameter Real rampWidth = 0.3 "pedal travel over which drive/brake engage (quadratic ramp)";
       parameter SI.AngularVelocity wEps = 1.0;
       parameter SI.Torque tEps = 1.0;
-      parameters vehicleParams annotation(
-        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Blocks.Interfaces.RealInput u "-1 = full brake, 1 = full throttle" annotation(
         Placement(transformation(origin = {-100, 70}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {70, 60}, extent = {{-20, -20}, {20, 20}})));
       Modelica.Blocks.Interfaces.RealInput w[4](each unit = "rad/s") "wheel speeds" annotation(
         Placement(transformation(origin = {-100, 30}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {72, 16}, extent = {{-20, -20}, {20, 20}})));
       Modelica.Blocks.Interfaces.RealOutput tau[4](each unit = "N.m") "torque demand" annotation(
         Placement(transformation(origin = {100, 8}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {54, -16}, extent = {{-20, -20}, {20, 20}})));
+      DriveBrakeTorque driveBrakeTorque(wEps = wEps, tEps = tEps) annotation(
+        Placement(transformation(origin = {30, 10}, extent = {{-10, -10}, {10, 10}})));
       Real uDrive;
       Real uBrake;
+    equation
+// split the command into throttle and brake with a C1 ramp: exactly zero on the other side of
+// u = 0 (no drive/brake overlap), quadratic over the first rampWidth of travel (constant curvature),
+// linear beyond, normalized so that |u| = 1 still gives full torque
+      uDrive = noEvent(if u <= 0 then 0 elseif u < rampWidth then u^2/(2*rampWidth) else u - rampWidth/2)/(1 - rampWidth/2);
+      uBrake = noEvent(if u >= 0 then 0 elseif -u < rampWidth then u^2/(2*rampWidth) else -u - rampWidth/2)/(1 - rampWidth/2);
+      driveBrakeTorque.uDrive = uDrive;
+      driveBrakeTorque.uBrake = uBrake;
+      connect(w, driveBrakeTorque.w);
+      connect(driveBrakeTorque.tau, tau);
+    end ThrottleSmoothing;
+
+    model DriveBrakeTorque "wheel torques from separate drive and brake commands; linear in each command"
+      import Modelica.Units.SI;
+      parameter SI.AngularVelocity wEps = 1.0;
+      parameter SI.Torque tEps = 1.0;
+      parameters vehicleParams annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealInput uDrive "0 .. 1, fraction of available drive torque" annotation(
+        Placement(transformation(origin = {-100, 80}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-80, 80}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput uBrake "0 .. 1, fraction of maximum brake torque" annotation(
+        Placement(transformation(origin = {-100, 60}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput w[4](each unit = "rad/s") "wheel speeds" annotation(
+        Placement(transformation(origin = {-100, 30}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {-80, 16}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealOutput tau[4](each unit = "N.m") "torque demand" annotation(
+        Placement(transformation(origin = {100, 8}, extent = {{-14, -14}, {14, 14}}), iconTransformation(origin = {80, -16}, extent = {{-20, -20}, {20, 20}})));
       SI.AngularVelocity wDrive;
       SI.Torque tauPower;
       SI.Torque tauDrive;
     equation
-// split the command into throttle and brake
-// basically a smooth splitter but not in a function
-// uEps adjusts the width of the smooth splitter
-      uDrive = 0.5*(u + sqrt(u^2 + uEps^2));
-      uBrake = 0.5*(-u + sqrt(u^2 + uEps^2));
       wDrive = sqrt(((w[3] + w[4])/2)^2 + wEps^2);
 // rear wheels only
       tauPower = vehicleParams.hpPower*vehicleParams.engineEff/wDrive;
@@ -1244,7 +1433,7 @@ package AlyssaModel
       tau[2] = -uBrake*vehicleParams.maxBrakeTorque*vehicleParams.brakeBias*0.5*w[2]/sqrt(w[2]^2 + wEps^2);
       tau[3] = uDrive*tauDrive*0.5 - uBrake*vehicleParams.maxBrakeTorque*(1 - vehicleParams.brakeBias)*0.5*w[3]/sqrt(w[3]^2 + wEps^2);
       tau[4] = uDrive*tauDrive*0.5 - uBrake*vehicleParams.maxBrakeTorque*(1 - vehicleParams.brakeBias)*0.5*w[4]/sqrt(w[4]^2 + wEps^2);
-    end ThrottleSmoothing;
+    end DriveBrakeTorque;
 
     model SteerSmoothing
       import Modelica.Units.SI;
@@ -1257,6 +1446,22 @@ package AlyssaModel
     equation
       der(delta) = vehicleParams.maxSteerRate*uSteer;
     end SteerSmoothing;
+
+    model PedalSmoothing "drive and brake pedal positions as states driven by rate commands, like SteerSmoothing"
+      parameters vehicleParams annotation(
+        Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealInput uDriveRate "-1 .. 1, fraction of maxPedalRate" annotation(
+        Placement(transformation(origin = {-100, 60}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 60}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealInput uBrakeRate "-1 .. 1, fraction of maxPedalRate" annotation(
+        Placement(transformation(origin = {-100, 20}, extent = {{-12, -12}, {12, 12}}), iconTransformation(origin = {-80, 20}, extent = {{-20, -20}, {20, 20}})));
+      Modelica.Blocks.Interfaces.RealOutput drive(start = 0, fixed = true, stateSelect = StateSelect.always) "0 .. 1, fraction of available drive torque" annotation(
+        Placement(transformation(origin = {100, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, 60}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Interfaces.RealOutput brake(start = 0, fixed = true, stateSelect = StateSelect.always) "0 .. 1, fraction of maximum brake torque" annotation(
+        Placement(transformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      der(drive) = vehicleParams.maxPedalRate*uDriveRate;
+      der(brake) = vehicleParams.maxPedalRate*uBrakeRate;
+    end PedalSmoothing;
   end Controllers;
 
   package MotionBlocks
