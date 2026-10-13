@@ -6,7 +6,7 @@ package AlyssaModel
       parameter SI.Inertia Ixx = vehicleParams.Ixx;
       parameter SI.Inertia Iyy = vehicleParams.Iyy;
       parameter SI.Inertia Izz = vehicleParams.Izz;
-      Modelica.Mechanics.MultiBody.Parts.Body body(I_11 = Ixx, I_22 = Iyy, I_33 = Izz, r_CM = {0, 0, 0}, m = vehicleMass) annotation(
+      Modelica.Mechanics.MultiBody.Parts.Body body(I_11 = Ixx, I_22 = Iyy, I_33 = Izz, r_CM = {0, 0, 0}, m = vehicleParams.mSprung) annotation(
         Placement(transformation(origin = {0, 22}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a chassisFrame annotation(
         Placement(transformation(origin = {0, -100}, extent = {{-16, -16}, {16, 16}}, rotation = -90), iconTransformation(origin = {6, -84}, extent = {{-16, -16}, {16, 16}})));
@@ -96,27 +96,27 @@ package AlyssaModel
         Placement(transformation(origin = {110, 90}, extent = {{-10, -10}, {10, 10}})));
   RackSteering steering annotation(
         Placement(transformation(origin = {-50, 10}, extent = {{-10, -10}, {10, 10}})));
-  Suspension.RigidCorner cornerR(side = 1, isFront = true)  annotation(
-        Placement(transformation(origin = {-10, 70}, extent = {{-10, -10}, {10, 10}})));
-  Suspension.RigidCorner cornerL(side = -1, isFront = true)  annotation(
-        Placement(transformation(origin = {-10, -70}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.DoubleWishboneCorner cornerR(side = 1, isFront = true)  annotation(
+        Placement(transformation(origin = {-20, 50}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.DoubleWishboneCorner cornerL(side = -1, isFront = true)  annotation(
+        Placement(transformation(origin = {-20, -50}, extent = {{-10, -10}, {10, 10}})));
     equation
-  connect(steering.chassisConnect, subFrameFront) annotation(
+      connect(steering.chassisConnect, subFrameFront) annotation(
         Line(points = {{-58, 8}, {100, 8}, {100, 0}}, color = {95, 95, 95}));
-  connect(cornerR.chassisConnect, subFrameFront) annotation(
-        Line(points = {{-22, 62}, {100, 62}, {100, 0}}, color = {95, 95, 95}));
-  connect(cornerL.chassisConnect, subFrameFront) annotation(
-        Line(points = {{-22, -78}, {100, -78}, {100, 0}}, color = {95, 95, 95}));
-  connect(delta, steering.delta) annotation(
+      connect(delta, steering.delta) annotation(
         Line(points = {{-100, 70}, {-56, 70}, {-56, 14}}, color = {0, 0, 127}));
-  connect(cornerR.tieRodInner, steering.tieRodInnerR) annotation(
-        Line(points = {{-20, 76}, {-50, 76}, {-50, 14}}, color = {95, 95, 95}));
-  connect(steering.tieRodInnerL, cornerL.tieRodInner) annotation(
-        Line(points = {{-52, 4}, {-20, 4}, {-20, -64}}, color = {95, 95, 95}));
-  connect(cornerR.wheelConnect, frame_bR) annotation(
-        Line(points = {{-2, 70}, {0, 70}, {0, 100}}, color = {95, 95, 95}));
+      connect(steering.tieRodInnerR, cornerR.tieRodInner) annotation(
+        Line(points = {{-50, 14}, {-40, 14}, {-40, 56}, {-30, 56}}, color = {95, 95, 95}));
+      connect(cornerR.chassisConnect, subFrameFront) annotation(
+        Line(points = {{-32, 42}, {100, 42}, {100, 0}}, color = {95, 95, 95}));
+      connect(cornerR.wheelConnect, frame_bR) annotation(
+        Line(points = {{-12, 50}, {0, 50}, {0, 100}}, color = {95, 95, 95}));
   connect(cornerL.wheelConnect, frame_bL) annotation(
-        Line(points = {{-2, -70}, {0, -70}, {0, -100}}, color = {95, 95, 95}));
+        Line(points = {{-12, -50}, {0, -50}, {0, -100}}, color = {95, 95, 95}));
+  connect(steering.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-52, 4}, {-30, 4}, {-30, -44}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subFrameFront) annotation(
+        Line(points = {{-32, -58}, {100, -58}, {100, 0}}, color = {95, 95, 95}));
     end FrontSuspension;
 
     model SteeringComputation
@@ -149,27 +149,27 @@ package AlyssaModel
         Placement(transformation(origin = {-50, 2}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.Constant deltaValue(k = 0)  annotation(
         Placement(transformation(origin = {-90, 70}, extent = {{-10, -10}, {10, 10}})));
-  Suspension.RigidCorner cornerR(side = 1, isFront = false)  annotation(
-        Placement(transformation(origin = {-10, 50}, extent = {{-10, -10}, {10, 10}})));
-  Suspension.RigidCorner cornerL(side = -1, isFront = false)  annotation(
-        Placement(transformation(origin = {-10, -50}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.DoubleWishboneCorner cornerR(side = 1, isFront = false)  annotation(
+        Placement(transformation(origin = {-20, 50}, extent = {{-10, -10}, {10, 10}})));
+  Suspension.DoubleWishboneCorner cornerL(side = -1, isFront = false)  annotation(
+        Placement(transformation(origin = {-18, -50}, extent = {{-10, -10}, {10, 10}})));
     equation
-  connect(subFrameRear, toeLinks.chassisConnect) annotation(
+      connect(subFrameRear, toeLinks.chassisConnect) annotation(
         Line(points = {{-100, 0}, {-58, 0}}));
-  connect(deltaValue.y, toeLinks.delta) annotation(
+      connect(deltaValue.y, toeLinks.delta) annotation(
         Line(points = {{-78, 70}, {-56, 70}, {-56, 6}}, color = {0, 0, 127}));
-  connect(cornerR.chassisConnect, subFrameRear) annotation(
-        Line(points = {{-22, 42}, {-100, 42}, {-100, 0}}, color = {95, 95, 95}));
-  connect(cornerL.chassisConnect, subFrameRear) annotation(
-        Line(points = {{-22, -58}, {-100, -58}, {-100, 0}}, color = {95, 95, 95}));
-  connect(toeLinks.tieRodInnerL, cornerL.tieRodInner) annotation(
-        Line(points = {{-52, -4}, {-20, -4}, {-20, -44}}, color = {95, 95, 95}));
-  connect(cornerR.tieRodInner, toeLinks.tieRodInnerR) annotation(
-        Line(points = {{-20, 56}, {-50, 56}, {-50, 6}}, color = {95, 95, 95}));
-  connect(cornerR.wheelConnect, frame_bR) annotation(
-        Line(points = {{-2, 50}, {0, 50}, {0, 100}}, color = {95, 95, 95}));
+      connect(cornerR.wheelConnect, frame_bR) annotation(
+        Line(points = {{-12, 50}, {0, 50}, {0, 100}}, color = {95, 95, 95}));
+      connect(toeLinks.tieRodInnerR, cornerR.tieRodInner) annotation(
+        Line(points = {{-50, 6}, {-44, 6}, {-44, 56}, {-30, 56}}, color = {95, 95, 95}));
+      connect(cornerR.chassisConnect, subFrameRear) annotation(
+        Line(points = {{-32, 42}, {-100, 42}, {-100, 0}}, color = {95, 95, 95}));
   connect(cornerL.wheelConnect, frame_bL) annotation(
-        Line(points = {{-2, -50}, {0, -50}, {0, -100}}, color = {95, 95, 95}));
+        Line(points = {{-10, -50}, {0, -50}, {0, -100}}, color = {95, 95, 95}));
+  connect(toeLinks.tieRodInnerL, cornerL.tieRodInner) annotation(
+        Line(points = {{-52, -4}, {-28, -4}, {-28, -44}}, color = {95, 95, 95}));
+  connect(cornerL.chassisConnect, subFrameRear) annotation(
+        Line(points = {{-30, -58}, {-100, -58}, {-100, 0}}, color = {95, 95, 95}));
     end RearSuspension;
 
     model Steering
@@ -1043,7 +1043,7 @@ package AlyssaModel
         Placement(transformation(origin = {2, 0}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Blocks.Sources.Constant throttleInput(k = 0.2) annotation(
         Placement(transformation(origin = {-84, 20}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Blocks.Sources.Constant steerInput(k = 0.05) annotation(
+      Modelica.Blocks.Sources.Constant steerInput(k = 0.075) annotation(
         Placement(transformation(origin = {-84, -12}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(throttleInput.y, optimalControl.throttle) annotation(
