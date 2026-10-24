@@ -1,0 +1,143 @@
+true
+true
+true
+""
+true
+record SimulationResult
+    resultFile = "",
+    simulationOptions = "startTime = 0.0, stopTime = 6.0, numberOfIntervals = 300, tolerance = 1e-7, method = 'dassl', fileNamePrefix = 'Heave', options = '', outputFormat = 'csv', variableFilter = 'time|points.*|telemetry.*|excitation.*|steering', cflags = '', simflags = ''",
+    messages = "Failed to build model: AlyssaAnimation.Heave",
+    timeFrontend = 0.9374371,
+    timeBackend = 25.8501351,
+    timeSimCode = 2.4599552,
+    timeTemplates = 1.0360199,
+    timeCompile = 0.7541429,
+    timeSimulation = 0.0,
+    timeTotal = 31.0377297
+end SimulationResult;
+"Error: Error building simulator. Build log: mingw32-make: Entering directory 'C:/Users/amcpo/VEHICL~1/ANIMAT~1/results'
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave.o Heave.c
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_functions.o Heave_functions.c
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_records.o Heave_records.c
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_01exo.o Heave_01exo.c
+      0 [main] sh (57292) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - couldn't create signal pipe, Win32 error 5
+      0 [main] sh (64268) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_02nls.o Heave_02nls.c
+      0 [main] sh (32700) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+      0 [main] sh (61884) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_03lsy.o Heave_03lsy.c
+      1 [main] sh (41156) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_04set.o Heave_04set.c
+      0 [main] sh (19828) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_05evt.o Heave_05evt.c
+      0 [main] sh (61596) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_06inz.o Heave_06inz.c
+      0 [main] sh (55456) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_07dly.o Heave_07dly.c
+      0 [main] sh (52792) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_08bnd.o Heave_08bnd.c
+      0 [main] sh (54464) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_09alg.o Heave_09alg.c
+      0 [main] sh (48288) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_10asr.o Heave_10asr.c
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_11mix.o Heave_11mix.c
+      0 [main] sh (58920) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+      0 [main] sh (6892) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_12jac.o Heave_12jac.c
+      0 [main] sh (57928) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Heave -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Heave_13opt.o Heave_13opt.c
+      1 [main] sh (37056) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - couldn't create signal pipe, Win32 error 5
+mingw32-make: *** [<builtin>: Heave.o] Error -1073741502
+mingw32-make: *** Waiting for unfinished jobs....
+mingw32-make: *** [<builtin>: Heave_03lsy.o] Error -1073741502
+      0 [main] sh (36564) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+mingw32-make: *** [<builtin>: Heave_05evt.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_records.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_07dly.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_10asr.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_08bnd.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_04set.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_12jac.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_13opt.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_06inz.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_11mix.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_09alg.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_01exo.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_02nls.o] Error -1073741502
+mingw32-make: *** [<builtin>: Heave_functions.o] Error -1073741502
+mingw32-make: Leaving directory 'C:/Users/amcpo/VEHICL~1/ANIMAT~1/results'
+RESULT: 2
+"
+record SimulationResult
+    resultFile = "",
+    simulationOptions = "startTime = 0.0, stopTime = 6.0, numberOfIntervals = 300, tolerance = 1e-7, method = 'dassl', fileNamePrefix = 'Roll', options = '', outputFormat = 'csv', variableFilter = 'time|points.*|telemetry.*|excitation.*|steering', cflags = '', simflags = ''",
+    messages = "Failed to build model: AlyssaAnimation.Roll",
+    timeFrontend = 0.7399731,
+    timeBackend = 25.8137622,
+    timeSimCode = 2.1230487,
+    timeTemplates = 0.9579412,
+    timeCompile = 0.3027699,
+    timeSimulation = 0.0,
+    timeTotal = 29.9375237
+end SimulationResult;
+"Error: Error building simulator. Build log: mingw32-make: Entering directory 'C:/Users/amcpo/VEHICL~1/ANIMAT~1/results'
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll.o Roll.c
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll_functions.o Roll_functions.c
+      0 [main] sh (37012) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - couldn't create signal pipe, Win32 error 5
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll_records.o Roll_records.c
+      0 [main] sh (64780) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll_01exo.o Roll_01exo.c
+      1 [main] sh (61048) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll_02nls.o Roll_02nls.c
+      0 [main] sh (38328) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll_03lsy.o Roll_03lsy.c
+      0 [main] sh (62856) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Roll -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Roll_04set.o Roll_04set.c
+      0 [main] sh (31040) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - couldn't create signal pipe, Win32 error 5
+mingw32-make: *** [<builtin>: Roll.o] Error -1073741502
+mingw32-make: *** Waiting for unfinished jobs....
+      0 [main] sh (57392) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+mingw32-make: *** [<builtin>: Roll_functions.o] Error -1073741502
+mingw32-make: *** [<builtin>: Roll_04set.o] Error -1073741502
+mingw32-make: *** [<builtin>: Roll_01exo.o] Error -1073741502
+mingw32-make: *** [<builtin>: Roll_02nls.o] Error -1073741502
+mingw32-make: *** [<builtin>: Roll_03lsy.o] Error -1073741502
+mingw32-make: *** [<builtin>: Roll_records.o] Error -1073741502
+mingw32-make: Leaving directory 'C:/Users/amcpo/VEHICL~1/ANIMAT~1/results'
+RESULT: 2
+"
+record SimulationResult
+    resultFile = "",
+    simulationOptions = "startTime = 0.0, stopTime = 6.0, numberOfIntervals = 300, tolerance = 1e-7, method = 'dassl', fileNamePrefix = 'Steering', options = '', outputFormat = 'csv', variableFilter = 'time|points.*|telemetry.*|excitation.*|steering', cflags = '', simflags = ''",
+    messages = "Failed to build model: AlyssaAnimation.Steering",
+    timeFrontend = 0.7955923,
+    timeBackend = 24.9716559,
+    timeSimCode = 2.0976809,
+    timeTemplates = 0.9341139,
+    timeCompile = 0.447621,
+    timeSimulation = 0.0,
+    timeTotal = 29.246682
+end SimulationResult;
+"Error: Error building simulator. Build log: mingw32-make: Entering directory 'C:/Users/amcpo/VEHICL~1/ANIMAT~1/results'
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering.o Steering.c
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_functions.o Steering_functions.c
+      0 [main] sh (10188) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - couldn't create signal pipe, Win32 error 5
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_records.o Steering_records.c
+      0 [main] sh (63276) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_01exo.o Steering_01exo.c
+      0 [main] sh (49352) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_02nls.o Steering_02nls.c
+      1 [main] sh (63212) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_03lsy.o Steering_03lsy.c
+      1 [main] sh (49800) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_04set.o Steering_04set.c
+      0 [main] sh (50920) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_05evt.o Steering_05evt.c
+      0 [main] sh (51540) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_06inz.o Steering_06inz.c
+      0 [main] sh (55052) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_07dly.o Steering_07dly.c
+      0 [main] sh (64084) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc/c\" -I\"C:/Program Files/OpenModelica1.25.4-64bit/include/omc\" -I. -DOPENMODELICA_XML_FROM_FILE_AT_RUNTIME -DOMC_MODEL_PREFIX=Steering -DOMC_NUM_MIXED_SYSTEMS=0 -DOMC_NUM_LINEAR_SYSTEMS=8 -DOMC_NUM_NONLINEAR_SYSTEMS=0 -DOMC_NDELAY_EXPRESSIONS=0 -DOMC_NVAR_STRING=0  -c -o Steering_08bnd.o Steering_08bnd.c
+      0 [main] sh (29440) C:\\PROGRA~1\\OPENMO~1.4-6\\tools\\msys\\usr\\bin\\sh.exe: *** fatal error - CreateFileMapping S-1-5-21-3167194333-3968244029-3006553215-1003.1, Win32 error 5.  Terminating.
+clang -municode  -Os -DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse     -I\"C:/P
