@@ -224,7 +224,7 @@ package AlyssaModel
         Modelica.Mechanics.MultiBody.Interfaces.Frame_b wheelConnect annotation(
           Placement(transformation(origin = {100, 0}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {74, 4}, extent = {{-16, -16}, {16, 16}})));
         Modelica.Mechanics.MultiBody.Interfaces.Frame_a tieRodInner annotation(
-          Placement(transformation(origin = {-100, 40}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-104, 50}, extent = {{-16, -16}, {16, 16}})));
+          Placement(transformation(origin = {-100, -40}, extent = {{-16, -16}, {16, 16}}), iconTransformation(origin = {-104, 50}, extent = {{-16, -16}, {16, 16}})));
       equation
 
       end BaseCorner;
@@ -283,17 +283,17 @@ package AlyssaModel
         parameter SI.Angle staticToe = 0 "positive = toe in";
         parameter SI.Mass mUnsprung = 0 "upright mass";
   Modelica.Mechanics.MultiBody.Joints.Assemblies.JointSSR tieRod(rod1Length = Modelica.Math.Vectors.norm(rTieOuter - rTieInner), rod1Mass = 0, n_b = Functions.mirrorY(nKingpin, side), rRod2_ib = Functions.mirrorY(rTieOuter - rKingpinTop, side), phi_guess = 0)  annotation(
-          Placement(transformation(origin = {-56, 38}, extent = {{-20, -20}, {20, 20}})));
+          Placement(transformation(origin = {-42, -40}, extent = {{-20, -20}, {20, 20}})));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation spindle(r = Functions.mirrorY(rWC - rKingpinTop, side))  annotation(
-          Placement(transformation(origin = {-22, 78}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {26, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Parts.FixedRotation staticAlign(rotationType = Modelica.Mechanics.MultiBody.Types.RotationTypes.PlanarRotationSequence, sequence = {3, 1, 2}, angles = {-side*Modelica.Units.Conversions.to_deg(staticToe), side*Modelica.Units.Conversions.to_deg(staticCamber), 0})  annotation(
-          Placement(transformation(origin = {12, 78}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {52, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Parts.Body upright(r_CM = {0, 0, 0}, m = mUnsprung)  annotation(
-          Placement(transformation(origin = {10, 42}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {36, -28}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Mechanics.MultiBody.Sensors.RelativeAngles wheelAngles(sequence = {3, 1, 2})  annotation(
-          Placement(transformation(origin = {-50, -12}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-70, -100}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Sensors.RelativePosition wheelPosition annotation(
-          Placement(transformation(origin = {-48, -44}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-48, -100}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Interfaces.RealOutput travel(unit="m") annotation(
           Placement(transformation(origin = {100, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {74, 78}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Interfaces.RealOutput camber(unit="rad") annotation(
@@ -301,29 +301,29 @@ package AlyssaModel
   Modelica.Blocks.Interfaces.RealOutput toe(unit="rad") annotation(
           Placement(transformation(origin = {100, 20}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {68, 22}, extent = {{-10, -10}, {10, 10}})));
       equation
-  connect(tieRodInner, tieRod.frame_a) annotation(
-          Line(points = {{-100, 40}, {-76, 40}, {-76, 38}}));
   connect(tieRod.frame_ib, spindle.frame_a) annotation(
-          Line(points = {{-40, 58}, {-32, 58}, {-32, 78}}, color = {95, 95, 95}));
+          Line(points = {{-26, -20}, {-26, -9.5}, {14, -9.5}, {14, 0}, {16, 0}}, color = {95, 95, 95}));
   connect(spindle.frame_b, staticAlign.frame_a) annotation(
-          Line(points = {{-12, 78}, {2, 78}}, color = {95, 95, 95}));
+          Line(points = {{36, 0}, {42, 0}}, color = {95, 95, 95}));
   connect(staticAlign.frame_b, wheelConnect) annotation(
-          Line(points = {{22, 78}, {54, 78}, {54, 0}, {100, 0}}, color = {95, 95, 95}));
+          Line(points = {{62, 0}, {100, 0}}, color = {95, 95, 95}));
   connect(spindle.frame_b, upright.frame_a) annotation(
-          Line(points = {{-12, 78}, {-12, 42}, {0, 42}}, color = {95, 95, 95}));
+          Line(points = {{36, 0}, {36, -18}}, color = {95, 95, 95}));
   connect(chassisConnect, wheelAngles.frame_a) annotation(
-          Line(points = {{-100, 0}, {-60, 0}, {-60, -12}}));
+          Line(points = {{-100, 0}, {-100, -100}, {-80, -100}}));
   connect(wheelConnect, wheelAngles.frame_b) annotation(
-          Line(points = {{100, 0}, {-40, 0}, {-40, -12}}));
-  connect(chassisConnect, wheelPosition.frame_a) annotation(
-          Line(points = {{-100, 0}, {-74, 0}, {-74, -44}, {-58, -44}}));
+          Line(points = {{100, 0}, {100, -100}, {-60, -100}}));
   connect(wheelPosition.frame_b, wheelConnect) annotation(
-          Line(points = {{-38, -44}, {100, -44}, {100, 0}}, color = {95, 95, 95}));
+          Line(points = {{-38, -100}, {91, -100}, {91, 0}, {100, 0}}, color = {95, 95, 95}));
       
       travel = -(wheelPosition.r_rel[3] - rWC[3]);
 // positive = bump
       toe = -side*wheelAngles.angles[1]; // positive = toe-in (including steer)
       camber = side*wheelAngles.angles[2];
+  connect(tieRodInner, tieRod.frame_a) annotation(
+          Line(points = {{-100, -40}, {-62, -40}}));
+  connect(wheelPosition.frame_a, chassisConnect) annotation(
+          Line(points = {{-58, -100}, {-100, -100}, {-100, 0}}, color = {95, 95, 95}));
       end PartialUprightCorner;
 
       model RigidCorner
@@ -392,44 +392,44 @@ package AlyssaModel
         final parameter SI.Length sDesign = Modelica.Math.Vectors.norm(rSpringArm - rSpringChassis) "coilover length at design";
         parameter Real motionRatio = if isFront then 0.665 else 0.713 "placeholder; measure on the rig";
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation ucaMount(r = Functions.mirrorY(rUCApivot, side))  annotation(
-          Placement(transformation(origin = {-18, 12}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-68, 60}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Joints.Revolute ucaPivot(n = Functions.mirrorY(normalize(rUCAr - rUCAf), side), stateSelect = StateSelect.always, phi(start = 0, fixed = true), w(start = 0, fixed = true))  annotation(
-          Placement(transformation(origin = {8, 12}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-32, 60}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation uca(r = Functions.mirrorY(rUBJ - rUCApivot, side))  annotation(
-          Placement(transformation(origin = {38, 12}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-4, 60}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation lcaMount(r = Functions.mirrorY(rLCApivot, side))  annotation(
-          Placement(transformation(origin = {-22, -64}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-64, -66}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Joints.Assemblies.JointUSR jointUSR(n1_a = Functions.mirrorY(normalize(rUCAr - rUCAf), side), n_b = Functions.mirrorY(normalize(rLCAr - rLCAf), side), rRod1_ia = Functions.mirrorY(rLBJ - rUBJ, side), rRod2_ib = Functions.mirrorY(rLBJ - rLCApivot, side), phi_guess = 0)  annotation(
-          Placement(transformation(origin = {48, -66}, extent = {{-20, -20}, {20, 20}}, rotation = 180)));
+          Placement(transformation(origin = {38, 40}, extent = {{-20, -20}, {20, 20}}, rotation = -90)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation springChassis(r = Functions.mirrorY(rSpringChassis, side))  annotation(
-          Placement(transformation(origin = {-20, -26}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-56, 80}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation springArm(r = Functions.mirrorY(rSpringArm - rLCApivot, side))  annotation(
-          Placement(transformation(origin = {48, -26}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
+          Placement(transformation(origin = {-34, 4}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Modelica.Mechanics.MultiBody.Forces.SpringDamperParallel coilover(c = kWheel/motionRatio^2, s_unstretched = sDesign + F0*motionRatio/kWheel, d = dWheel/motionRatio^2)  annotation(
-          Placement(transformation(origin = {12, -26}, extent = {{-10, -10}, {10, 10}})));
+          Placement(transformation(origin = {-36, 32}, extent = {{-10, -10}, {10, 10}})));
       equation
   connect(chassisConnect, ucaMount.frame_a) annotation(
-          Line(points = {{-100, 0}, {-100, 12}, {-28, 12}}));
+          Line(points = {{-100, 0}, {-100, 60}, {-78, 60}}));
   connect(ucaMount.frame_b, ucaPivot.frame_a) annotation(
-          Line(points = {{-8, 12}, {-8, 11}, {-2, 11}, {-2, 12}}, color = {95, 95, 95}));
+          Line(points = {{-58, 60}, {-58, 61}, {-42, 61}, {-42, 60}}, color = {95, 95, 95}));
   connect(ucaPivot.frame_b, uca.frame_a) annotation(
-          Line(points = {{18, 12}, {28, 12}}, color = {95, 95, 95}));
+          Line(points = {{-22, 60}, {-14, 60}}, color = {95, 95, 95}));
   connect(chassisConnect, lcaMount.frame_a) annotation(
-          Line(points = {{-100, 0}, {-84, 0}, {-84, -64}, {-32, -64}}));
+          Line(points = {{-100, 0}, {-84, 0}, {-84, -66}, {-74, -66}}));
   connect(lcaMount.frame_b, jointUSR.frame_b) annotation(
-          Line(points = {{-12, -64}, {8, -64}, {8, -66}, {28, -66}}, color = {95, 95, 95}));
+          Line(points = {{-54, -66}, {8, -66}, {8, 20}, {38, 20}}, color = {95, 95, 95}));
   connect(uca.frame_b, jointUSR.frame_a) annotation(
-          Line(points = {{48, 12}, {48, -26}, {68, -26}, {68, -66}}, color = {95, 95, 95}));
-  connect(jointUSR.frame_ia, tieRod.frame_b) annotation(
-          Line(points = {{64, -86}, {64, 38}, {-36, 38}}, color = {95, 95, 95}));
+          Line(points = {{6, 60}, {38, 60}}, color = {95, 95, 95}));
   connect(chassisConnect, springChassis.frame_a) annotation(
-          Line(points = {{-100, 0}, {-98, 0}, {-98, -26}, {-30, -26}}));
+          Line(points = {{-100, 0}, {-99, 0}, {-99, 80}, {-66, 80}}));
   connect(jointUSR.frame_ib, springArm.frame_a) annotation(
-          Line(points = {{32, -86}, {45, -86}, {45, -74}, {58, -74}, {58, -26}}, color = {95, 95, 95}));
+          Line(points = {{58, 24}, {58, 12}, {8, 12}, {8, 11}, {-24, 11}, {-24, 4}}, color = {95, 95, 95}));
   connect(springChassis.frame_b, coilover.frame_a) annotation(
-          Line(points = {{-10, -26}, {-10, -27}, {2, -27}, {2, -26}}, color = {95, 95, 95}));
+          Line(points = {{-46, 80}, {-46, 32}}, color = {95, 95, 95}));
   connect(coilover.frame_b, springArm.frame_b) annotation(
-          Line(points = {{22, -26}, {38, -26}}, color = {95, 95, 95}));
+          Line(points = {{-26, 32}, {-26, 17}, {-44, 17}, {-44, 4}}, color = {95, 95, 95}));
+  connect(jointUSR.frame_ia, tieRod.frame_b) annotation(
+          Line(points = {{58, 56}, {72, 56}, {72, -40}, {-22, -40}}, color = {95, 95, 95}));
       end DoubleWishboneCorner;
     end Suspension;
 
